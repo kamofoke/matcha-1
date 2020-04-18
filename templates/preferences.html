@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+
+
+{% endblock %}
+
+{% block body %}
+
+{% endblock %}
+{% block header %}
+<!DOCTYPE html>
+<html>
+<head>
+	<div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="150" height="auto"></div>
+</head>
+​
+<body>
+​
+​{% if completed == 1 %}
+	<h3 style="color:brown; font-size: 1vw; font-family: Verdana, Geneva, Tahoma, sans-serif;">You successfully inputted your preferences</h3>
+{% endif %}
+<h1>Tell us about yourself!</h1>
+<form action=" {{ url_for('preferences_handler') }}" method = "POST" enctype="multipart/form-data">
+Name: <input name="name" type="text" required> Surname: <input name="surname" type="text" required>
+<p>Gender:</p>
+<input type="radio" name="gender" value="male" checked="checked">Male
+<input type="radio" name="gender" value="female">Female
+<input type="radio" name="gender" value="other">Other<br>
+<br>Surburb: <br><input name="suburb" type="text"><br><br>
+Postal Code: <br><input name="postal code" type="text">
+<p>Sexual Preference:</p>
+<input type="radio" name="sexual" value="homosexual">Homosexual
+<input type="radio" name="sexual" value="heterosexual">Heterosexual
+<input type="radio" name="sexual" value="bisexual" checked="checked">Bisexual
+<p>Bio:</p>
+<textarea name="bio" placeholder="Tell us more..." me="message" style="width:250px; height:150px;"></textarea>
+<h2>Interests</h2>
+<h3>Do you like animals?</h3>
+<input type="radio" name="animals" value="yes">Yes
+<input type="radio" name="animals" checked="checked" value="no">No
+<h3>Do you like music?</h3>
+<input type="radio" name="music" value="yes">Yes
+<input type="radio" name="music" checked="checked" value="no">No
+<h3>Do you like movies?</h3>
+<input type="radio" name="movies" value="yes">Yes
+<input type="radio" name="movies" checked="checked" value="no">No
+<h3>Do you like sports</h3>
+<input type="radio" name="sports" value="yes">Yes
+<input type="radio" name="sports" checked="checked" value="no">No
+<h3>Do you like food?</h3>
+<input type="radio" name="food" value="yes">Yes
+<input type="radio" name="food" checked="checked" value="no">No
+<br>
+<br>Select images: <input type="file" name="img" multiple>
+<br/><input type="submit" name = "pref" value = "Submit"/>
+</form><br/>
+<button class="button.login">Enable Location</button><br/>
+</body>
+</html>
+{% endblock %}
