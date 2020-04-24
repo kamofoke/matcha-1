@@ -213,6 +213,8 @@ def dislike():
 @app.route('/preferences/', methods=['POST'])
 def preferences_handler():
 	username = session['user']
+	name = request.form['name']
+	surname = request.form['surname']
 	gender = request.form['gender']
 	suburb = request.form['suburb']
 	postal_code = request.form['postal code']
