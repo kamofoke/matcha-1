@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 from datetime import date
 import os, re
 import pymongo
+import pygeoip
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -273,3 +274,28 @@ if (__name__ == "__main__"):
 
 #npm install -g @vue/cli
 #vue init webpack Frontend
+
+# START OF GEOLOCATION
+gi = pygeoip.GeoIP('GeoIPRegion.dat')
+gi.region_by_name('apple.com')
+{'region_code': 'CA', 'country_code': 'US'}
+
+gi = pygeoip.GeoIP('GeoIPCity.dat')
+gi.record_by_addr('64.233.161.99')
+{
+    'city': u'Mountain View',
+    'region_code': u'CA',
+    'area_code': 650,
+    'time_zone': 'America/Los_Angeles',
+    'dma_code': 807,
+    'metro_code': 'San Francisco, CA',
+    'country_code3': 'USA',
+    'latitude': 37.41919999999999,
+    'postal_code': u'94043',
+    'longitude': -122.0574,
+    'country_code': 'US',
+    'country_name': 'United States',
+    'continent': 'NA'
+}
+gi.time_zone_by_addr('64.233.161.99')
+'America/Los_Angeles'
