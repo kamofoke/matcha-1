@@ -193,14 +193,6 @@ def home():
 		return render_template('home.html', name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
 	else:
 		return "You have no matches"
-			
-
-def checkuser(fun):
-	try:
-		username = session['user']
-	except KeyError:
-		return render_template('index.html')
-	return fun()
 
 @app.route('/like')
 def like():
