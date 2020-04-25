@@ -7,6 +7,7 @@ from bson.objectid import ObjectId
 from datetime import date
 import os, re
 import pymongo
+import requests
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -29,7 +30,14 @@ mail = Mail(app)
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	res = requests.get('https://ipinfo.io')
+	location_data = res.json()
+	city = location_data['city']
+	country = location_data['country']
+	lat_long = location_data['loc'].split(',')
+	latitude = lat_long[0]
+	longitude = lat_long[1]
+	return render_template('index.html', location_data=location_data, city=city, country=country, latitude=latitude, longitude=longitude)
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
