@@ -27,6 +27,17 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
+@app.route('/populatedb')
+def populateDB():
+	col.remove( { } )
+	query = {"Pref": "1", "Verify": "1", "Name": "Tanya", "Surname": "Loft", "Age": "22", "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": ("Password123!"), 
+	"Gender": "female", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Movies": "yes"}
+	col.insert_one(query)
+	query = {"Pref": "1", "Verify": "1", "Name": "Jeremiah", "Surname": "Dun", "Age": "22", "Email": "jerry@gmail.com", "username": "jerry", "Password": ("Password123!"), 
+	"Gender": "male", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Movies": "yes"}
+	col.insert_one(query)
+	return index()
+
 @app.route('/')
 def index():
 	return render_template('index.html')
@@ -55,7 +66,7 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash(password)}
+								query = {"Pref": "0", "Verify": "0", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": (password)}
 								col.insert_one(query)
 								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
 								msg.body = 	"Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
@@ -81,7 +92,7 @@ def login():
 	if request.method == "GET":
 		return render_template('index.html')
 	username = request.form['username']
-	password = hash(request.form['password'])
+	password = (request.form['password'])
 	result = col.find_one({"username": username})
 	if request.method == 'POST':
 		if result != None:
@@ -115,8 +126,6 @@ def logout():
 		
 @app.route('/home', methods=['GET'])
 def home():
-	if request.method == "GET":
-		return render_template('home.html')
 	try:
 		username = session['user']
 	except KeyError:
