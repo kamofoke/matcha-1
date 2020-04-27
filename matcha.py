@@ -1,11 +1,11 @@
 from flask import Flask, render_template, url_for, request, redirect , session
-from flask_mail import Mail, Message
-from werkzeug.utils import secure_filename
 from email_validator import validate_email, EmailNotValidError
-from pymongo import MongoClient
+from werkzeug.utils import secure_filename
+from flask_mail import Mail, Message
 from bson.objectid import ObjectId
+import hashlib, binascii, os, re
+from pymongo import MongoClient
 from datetime import date
-import os, re
 import pymongo
 
 UPLOAD_FOLDER = './static/profile_pictures'
@@ -66,11 +66,11 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": (password)}
+								query = {"Pref": "0", "Verify": "0", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
-								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
-								msg.body = 	"Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
-								mail.send(msg)
+								# msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
+								# msg.body = 	"Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
+								# mail.send(msg)
 							else:
 								return render_template('index.html', error = 1)
 						else:
@@ -92,24 +92,25 @@ def login():
 	if request.method == "GET":
 		return render_template('index.html')
 	username = request.form['username']
-	password = (request.form['password'])
+	password = request.form['password']
 	result = col.find_one({"username": username})
 	if request.method == 'POST':
 		if result != None:
-			result = col.find_one({"Password": password})
-			if result != None:
-				for cursor in col.find({"username": username}):
-					pref = cursor['Pref']
-					verify = cursor['Verify']
-				if verify == "1":
-					if pref == "0":
-						session['user'] = username
-						return render_template('preferences.html', username = username)
+			for cursor in col.find({"username": username}):
+				pref = cursor['Pref']
+				verify = cursor['Verify']
+				passwordhash = cursor['Password']
+			if verify_password(passwordhash, password):
+				if result != None:
+					if verify == "1":
+						if pref == "0":
+							session['user'] = username
+							return render_template('preferences.html', username = username)
+						else:
+							session['user'] = username 
+							return redirect(url_for('home'))
 					else:
-						session['user'] = username 
-						return redirect(url_for('home'))
-				else:
-					return render_template('index.html', error = 8)
+						return render_template('index.html', error = 8)
 			else:
 				return render_template('index.html', error = 2)
 		else:
@@ -119,13 +120,15 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-	if request.method == "GET":
-		return render_template('home.html')
+	# if request.method == "GET":
+	# 	return render_template('home.html')
 	session.pop("user", None)
 	return render_template('index.html')
 		
 @app.route('/home', methods=['GET'])
 def home():
+	# if request.method == "GET":
+	# 	return render_template('home.html')
 	try:
 		username = session['user']
 	except KeyError:
@@ -199,9 +202,26 @@ def home():
 			Suburb1 = cursor1['Suburb']
 			Gender1 = cursor1['Gender']
 			Sexual_Orientation1 = cursor1['Sexual Orientation']
-		return render_template('home.html', name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
+		return render_template('home.html', user=session['user'], name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
 	else:
 		return "You have no matches"
+
+def hash_password(password):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
+                                salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    return (salt + pwdhash).decode('ascii')
+
+def verify_password(stored_password, provided_password):
+    salt = stored_password[:64]
+    stored_password = stored_password[64:]
+    pwdhash = hashlib.pbkdf2_hmac('sha512', 
+                                  provided_password.encode('utf-8'), 
+                                  str(salt).encode('ascii'), 
+                                  100000)
+    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+    return pwdhash == stored_password
 
 @app.route('/like')
 def like():
@@ -209,7 +229,7 @@ def like():
 
 @app.route('/dislike')
 def dislike():
-		return redirect(url_for('profile'))
+	return redirect(url_for('profile'))
 
 @app.route('/preferences/', methods=['POST'])
 def preferences_handler():

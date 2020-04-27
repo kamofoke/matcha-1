@@ -13,6 +13,9 @@
     <title>Document</title>
 </head>
 <body>
+	{% if user %}
+	<h4>Logged in as {{user}}</h4>
+	{% endif %}
     <div class="container">
         <div class="row profile">
             <div class="col-md-3">
