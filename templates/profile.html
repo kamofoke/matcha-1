@@ -43,6 +43,12 @@
                         </div>
                     </div>
                     <div class="profile-usermenu">
+					{% if noti == "1" %}
+					<a href="/notis">Switch Off Notifications</a>
+					{% endif %}
+					{% if noti == "0" %}
+					<a href="/notis">Switch On Notifications</a>
+					{% endif %}
                         <ul class="nav">
                             <li>
                                 <a href="#">

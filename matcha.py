@@ -66,7 +66,7 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Noti": "1", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
 								# msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
 								# msg.body = 	"Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
@@ -231,6 +231,32 @@ def like():
 def dislike():
 	return redirect(url_for('profile'))
 
+@app.route('/notis')
+def thing():
+	usr = session['user']
+	q1 = { "username": usr }
+	n = "0"
+	for cursor in col.find(q1):
+		Name = cursor['Name']
+		Surname = cursor['Surname']
+		Food = cursor['Food']
+		Music = cursor['Music']
+		Movies = cursor['Movies']
+		Animals = cursor['Animals']
+		Sports = cursor['Sports']
+		Bio = cursor['Bio']
+		Suburb = cursor['Suburb']
+		Gender = cursor['Gender']
+		Postal_Code = cursor['Postal Code']
+		Sexual_Orientation = cursor['Sexual Orientation']
+		Noti = cursor['Noti']
+	if Noti == "0":
+		n = "1"
+	nv = { "$set": { "Noti": n } }
+	col.update_one(q1, nv)
+	return redirect(url_for('profile'))
+
+
 @app.route('/preferences/', methods=['POST'])
 def preferences_handler():
 	username = session['user']
@@ -278,7 +304,8 @@ def profile():
 		Gender = cursor['Gender']
 		Postal_Code = cursor['Postal Code']
 		Sexual_Orientation = cursor['Sexual Orientation']
-	return render_template('profile.html', name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
+		Noti = cursor['Noti']
+	return render_template('profile.html', name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4, noti=Noti)
  
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
