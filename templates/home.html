@@ -18,6 +18,9 @@
 	{% endif %}
     <div class="container">
         <div class="row profile">
+			{% if nomatches == 1 %}
+				<h1>You have no matches</h1>
+			{% else %}
             <div class="col-md-3">
                 <div class="profile-sidebar">
                     <div class="profile-userpic">
@@ -34,8 +37,8 @@
                         </div>
                     </div>
                     <div class="profile-userbuttons">
-                        <a href = "{{ url_for('like') }}" class="fa fa-heart" style="font-size:30px;color:pink;"></a>
-                        <a href = "{{ url_for('dislike') }}" class="fa fa-times" style="font-size:30px;color:red;"></a>
+                        <a href = "{{ url_for('like', likedUser = username) }}" class="fa fa-heart" style="font-size:30px;color:pink;"></a>
+                        <a href = "{{ url_for('dislike', dislikedUser = username) }}" class="fa fa-times" style="font-size:30px;color:red;"></a>
                     </div>
                     <div class="profile-usermenu">
                         <ul class="nav">
@@ -142,7 +145,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+			</div>
+			{% endif %}
         </div>
     </div>
     <br>
