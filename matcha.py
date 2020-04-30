@@ -206,23 +206,6 @@ def home():
 	else:
 		return "You have no matches"
 
-def hash_password(password):
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
-                                salt, 100000)
-    pwdhash = binascii.hexlify(pwdhash)
-    return (salt + pwdhash).decode('ascii')
-
-def verify_password(stored_password, provided_password):
-    salt = stored_password[:64]
-    stored_password = stored_password[64:]
-    pwdhash = hashlib.pbkdf2_hmac('sha512', 
-                                  provided_password.encode('utf-8'), 
-                                  str(salt).encode('ascii'), 
-                                  100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == stored_password
-
 @app.route('/like')
 def like():
 	return render_template('index.html')
@@ -253,8 +236,9 @@ def preferences_handler():
 	query = {"Name": name}
 	for cursor in col.find(query):
 		user_id = str(cursor['_id'])
-	img.save(os.path.join(app.config['IMAGE_UPLOADS'], user_id))
+	img.save(os.path.join(app.config['IMAGE_UPLOADS'], user_id + ".png"))
 	return redirect(url_for('home'))
+
 Pro_Img = "pexels-photo-937481.jpeg"
 Img1 = "pexels-photo-1236701.jpeg"
 Img2 = "pexels-photo-260367.jpeg"
@@ -291,6 +275,19 @@ def verify(username):
 	# col.update_one(myquery, newvalues)
 	# return render_template('index.html', verified=1)
 	
+def hash_password(password):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    return (salt + pwdhash).decode('ascii')
+
+def verify_password(stored_password, provided_password):
+    salt = stored_password[:64]
+    stored_password = stored_password[64:]
+    pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), str(salt).encode('ascii'), 100000)
+    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+    return pwdhash == stored_password
+
 if (__name__ == "__main__"):
     app.run(debug = True)
 
