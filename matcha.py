@@ -329,6 +329,10 @@ Img2 = "pexels-photo-260367.jpeg"
 Img3 = "pexels-photo-3497181.jpeg"
 Img4 = "pexels-photo-3497182.jpeg"
 
+@app.route('/editprofile')
+def editprofile():
+	return render_template('preferences.html', username = session['user'])
+
 @app.route('/profile')
 def profile():
 	username = session['user']
