@@ -30,20 +30,20 @@ mail = Mail(app)
 @app.route('/populatedb')
 def populateDB():
 	col.remove( { } )
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tanya", "Surname": "Loft", "Age": "22", "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": hash_password("Password123!"), 
-	"Gender": "female", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tanya", "Surname": "Loft", "Age": 22, "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": hash_password("Password123!"), 
+	"Gender": "female", "Popularity": 0, "Blocked": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Jeremiah", "Surname": "Dun", "Age": "22", "Email": "jerry@gmail.com", "username": "jerry", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Jeremiah", "Surname": "Dun", "Age": 22, "Email": "jerry@gmail.com", "username": "jerry", "Password": hash_password("Password123!"), 
+	"Gender": "male", "Popularity": 0, "Blocked": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tyler", "Surname": "Coughed", "Age": "22", "Email": "tc@gmail.com", "username": "tc", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tyler", "Surname": "Coughed", "Age": 22, "Email": "tc@gmail.com", "username": "tc", "Password": hash_password("Password123!"), 
+	"Gender": "male", "Popularity": 0, "Blocked": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Harry", "Surname": "Hairstyles", "Age": "22", "Email": "hs@gmail.com", "username": "hs", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Harry", "Surname": "Hairstyles", "Age": 22, "Email": "hs@gmail.com", "username": "hs", "Password": hash_password("Password123!"), 
+	"Gender": "male", "Popularity": 0, "Blocked": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": "22", "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": 22, "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
+	"Gender": "male", "Popularity": 0, "Blocked": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	return index()
 
@@ -65,8 +65,8 @@ def signup():
 	bday2 = re.search("([12]\\d{3}/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01]))", bday) 
 	if bday2:
 		today = date.today()
-		age = str(today.year - int(bday[0:4]) - ((today.month, today.day) < (int(bday[5:7]), int(bday[8:10]))))
-		if int(age) > 17:
+		age = today.year - int(bday[0:4]) - ((today.month, today.day) < (int(bday[5:7]), int(bday[8:10])))
+		if age > 17:
 			result = col.find_one({"username": username})
 			if result == None:
 				result = col.find_one({"Email": email})
@@ -75,10 +75,10 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Noti": "1", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "Noti": "1", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
 								# msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
-								# msg.body = 	"Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
+								# msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
 								# mail.send(msg)
 							else:
 								return render_template('index.html', error = 1)
@@ -134,7 +134,7 @@ def logout():
 	session.pop("user", None)
 	return render_template('index.html')
 		
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
 	# if request.method == "GET":
 	# 	return render_template('home.html')
@@ -144,6 +144,26 @@ def home():
 		return render_template('index.html')
 	username = session['user']
 	query = {"username": username}
+	if request.method == 'POST':
+		minAge = int(request.form['searchByAgeMin'])
+		maxAge = int(request.form['searchByAgeMax'])
+		minPopularity = int(request.form['searchByPopularityMin'])
+		maxPopularity = int(request.form['searchByPopularityMax'])
+		tagAnimals = request.form['animals']
+		tagFood = request.form['food']
+		tagSports = request.form['sports']
+		tagMovies = request.form['movies']
+		tagMusic = request.form['music']
+	else:
+		minAge = 18
+		maxAge = 100
+		minPopularity = -2147483648
+		maxPopularity = 2147483647
+		tagAnimals = "yes"
+		tagFood = "yes"
+		tagSports = "yes"
+		tagMovies = "yes"
+		tagMusic = "yes"
 	for cursor in col.find(query):
 		Food = cursor['Food']
 		Music = cursor['Music']
@@ -201,23 +221,33 @@ def home():
 		]
 		})
 	compatibleUsers = col.find(query)
+	compatibleUsersArr = []
 	if (compatibleUsers):
 		for compatibleUser in compatibleUsers:
-			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr):
-				Username1 = compatibleUser['username']
-				Name1 = compatibleUser['Name']
-				Surname1 = compatibleUser['Surname']
-				Food1 = compatibleUser['Food']
-				Music1 = compatibleUser['Music']
-				Movies1 = compatibleUser['Movies']
-				Animals1 = compatibleUser['Animals']
-				Sports1 = compatibleUser['Sports']
-				Bio1 = compatibleUser['Bio']
-				Suburb1 = compatibleUser['Suburb']
-				Gender1 = compatibleUser['Gender']
-				Sexual_Orientation1 = compatibleUser['Sexual Orientation']
-				return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
-	return render_template('home.html', nomatches=1)
+			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and 
+			compatibleUser['Age'] >= minAge and compatibleUser['Age'] <= maxAge and
+			compatibleUser['Popularity'] >= minPopularity and compatibleUser['Popularity'] <= maxPopularity and
+			compatibleUser['Food'] == tagFood and compatibleUser['Music'] == tagMusic and
+			compatibleUser['Movies'] == tagMovies and compatibleUser['Animals'] == tagAnimals and
+			compatibleUser['Sports'] == tagSports
+			):
+				compatibleUsersArr.append(compatibleUser)
+		
+		if (compatibleUsersArr):
+			Username1 = compatibleUsersArr[0]['username']
+			Name1 = compatibleUsersArr[0]['Name']
+			Surname1 = compatibleUsersArr[0]['Surname']
+			Food1 = compatibleUsersArr[0]['Food']
+			Music1 = compatibleUsersArr[0]['Music']
+			Movies1 = compatibleUsersArr[0]['Movies']
+			Animals1 = compatibleUsersArr[0]['Animals']
+			Sports1 = compatibleUsersArr[0]['Sports']
+			Bio1 = compatibleUsersArr[0]['Bio']
+			Suburb1 = compatibleUsersArr[0]['Suburb']
+			Gender1 = compatibleUsersArr[0]['Gender']
+			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
+			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
+	return render_template('home.html', nomatches=1, user=session['user'])
 
 def hash_password(password):
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
@@ -240,6 +270,7 @@ def verify_password(stored_password, provided_password):
 def like(likedUser):
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
+	compatibleUserPopularity = (compatibleUser['Popularity'] + 1) 
 	compatibleUserLikes = compatibleUser['Likes']
 	compatibleUserLikesArr = compatibleUserLikes.split(' ,')
 	compatibleUserMatches = compatibleUser['Matches']
@@ -259,6 +290,8 @@ def like(likedUser):
 		userLikes = likedUser if userLikes == "" else userLikes + ' ,' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
+	query = { "$set": { 'Popularity': compatibleUserPopularity }}
+	col.update_one({ "username": likedUser }, query)
 	return redirect(url_for('home'))
 	
 
@@ -267,11 +300,23 @@ def dislike(dislikedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
-	print ("this" + userDislikes + "this")
+	query = ({"username": dislikedUser})
+	user = col.find_one(query)
+	userPopularity = (user['Popularity'] - 1)
 	userDislikes = dislikedUser if userDislikes == '' else userDislikes + ' ,' + dislikedUser
 	query = { "$set": {'Dislikes': userDislikes}}
 	col.update_one({ "username": session['user'] }, query)
+	query = { "$set": {'Popularity': userPopularity }}
+	col.update_one({ "username": dislikedUser }, query)
 	return redirect(url_for('home'))
+
+@app.route('/matches')
+def matches():
+	query = ({"username": session['user']})
+	user = col.find_one(query)
+	matches = user['Matches']
+	matches = matches.split(' ,')
+	return render_template('matches.html', matches=matches, user=session['user'])
 
 @app.route('/notis')
 def thing():
