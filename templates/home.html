@@ -17,13 +17,38 @@
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
+        <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
 
     <div class="container">
+        <form action=" {{ url_for('home') }}" method = "POST" enctype="multipart/form-data">
+            <h2>Search and Filter</h2>
+			Search By Age Range <input type = "number"  min="18" max="100" value="18" name="searchByAgeMin"/> : <input type = "number" value="100" name="searchByAgeMax"  min="18" max="100" />
+			<input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
+			Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
+			<br />	
+            <input type="checkbox" name="animals" value="yes" checked>
+            <input type="hidden" name="animals" value="no">
+			<label for="animals">Animals</label>
+            <input type="checkbox" name="food" value="yes" checked>
+            <input type="hidden" name="food" value="no">
+			<label for="food">Food</label>
+            <input type="checkbox" name="sports" value="yes" checked>
+            <input type="hidden" name="sports" value="no">
+			<label for="sports">Sports</label>
+            <input type="checkbox" name="movies" value="yes" checked>
+            <input type="hidden" name="movies" value="no">
+			<label for="movies">Movies</label>
+            <input type="checkbox" name="music" value="yes" checked>
+            <input type="hidden" name="music" value="no">
+			<label for="music">Music</label>
+
+			<button type="submit" value="submitFilter">Submit</button>
+		</form>
         <div class="row profile">
 			{% if nomatches == 1 %}
-				<h1>You have no matches</h1>
+				<h1>There is no one new around you!</h1>
 			{% else %}
             <div class="col-md-3">
                 <div class="profile-sidebar">
