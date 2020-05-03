@@ -48,6 +48,8 @@ def populateDB():
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": 22, "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
 	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
+	query = {"username": "Admin", "Password": hash_password("Admin123!"), "Blocked": ""}
+	col.insert_one(query)
 	return index()
 
 @app.route('/')
@@ -109,9 +111,15 @@ def login():
 	if request.method == 'POST':
 		if result != None:
 			for cursor in col.find({"username": username}):
+				passwordhash = cursor['Password']
+				if username == 'Admin':
+					if verify_password(passwordhash, password):
+						session['user'] = username
+						return redirect(url_for('viewblockedusers'))
+					else:
+						return render_template('index.html', error = 2)
 				pref = cursor['Pref']
 				verify = cursor['Verify']
-				passwordhash = cursor['Password']
 			if verify_password(passwordhash, password):
 				if result != None:
 					if verify == "1":
@@ -175,10 +183,12 @@ def home():
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Likes = cursor['Likes']
 		Dislikes = cursor['Dislikes']
+		Blocked = cursor['Blocked']
 		Suburb = cursor['Suburb']
 
 	likesArr = Likes.split(", ")
 	dislikesArr = Dislikes.split(", ")
+	blockedArr = Blocked.split(", ")
 	query = {"$and" : [
 		{ "username" : {"$ne" : username}},
 		{ "$or" : [ { "Sports" : Sports }, { "Food" : Food }, { "Music" : Music }, { "Movies" : Movies }, { "Animals" : Animals } ] }
@@ -226,7 +236,8 @@ def home():
 	compatibleUsersArr = []
 	if (compatibleUsers):
 		for compatibleUser in compatibleUsers:
-			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and 
+			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
+			compatibleUser['username'] not in blockedArr and 
 			compatibleUser['Age'] >= minAge and compatibleUser['Age'] <= maxAge and
 			compatibleUser['Popularity'] >= minPopularity and compatibleUser['Popularity'] <= maxPopularity and
 			compatibleUser['Food'] == tagFood and compatibleUser['Music'] == tagMusic and
@@ -249,7 +260,7 @@ def home():
 			Suburb1 = compatibleUsersArr[0]['Suburb']
 			Gender1 = compatibleUsersArr[0]['Gender']
 			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
-			Image_Name_Arr = compatibleUsersArr[0]['Images'].split(', ')
+			Image_Name_Arr = (compatibleUsersArr[0]['Images']).split(', ')
 			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
 	return render_template('home.html', nomatches=1, user=session['user'])
 
@@ -315,6 +326,30 @@ def dislike(dislikedUser):
 	query = { "$set": {'Popularity': userPopularity }}
 	col.update_one({ "username": dislikedUser }, query)
 	return redirect(url_for('home'))
+
+@app.route('/block<string:blockedUser>')
+def block(blockedUser):
+	query = ({"username": session['user']})
+	user = col.find_one(query)
+	userBlocked = user['Blocked']
+	query = ({"username": blockedUser})
+	user = col.find_one(query)
+	userBlocked = blockedUser if userBlocked == '' else userBlocked + ', ' + blockedUser
+	query = { "$set": {'Blocked': userBlocked }}
+	col.update_one({ "username": session['user'] }, query)
+	col.update_one({ "username": "Admin" }, query )
+	return redirect(url_for('home'))
+
+@app.route('/viewblockedusers')
+def viewblockedusers():
+	username = session['user']
+	if (username != "Admin"):
+		return 'You do not have permission to view this page'
+	query = ({"username": username})
+	user = col.find_one(query)
+	blockedUsers = user['Blocked']
+	blockedUsersArr = blockedUsers.split(', ')
+	return render_template('blocked-users.html', blockedUsersArr=blockedUsersArr)
 
 @app.route('/matches')
 def matches():
@@ -433,12 +468,22 @@ def viewprofile(username):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti)
+	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr)
 
 @app.route('/profileviews/')
 def profileviews():
 	query = ({"username": session['user']})
 	user = col.find_one(query)
+	profileViews = user['ProfileViews']
+	profileViews = profileViews.split(', ')
+	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
+
+@app.route('/blockedusers')
+def adminblockedusers():
+	if (session['user']) != "Admin":
+		return render_template("index.html")
+	query = ({"Blocked"})
+	user = col.find(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
 	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])

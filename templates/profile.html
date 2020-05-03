@@ -32,11 +32,11 @@
         <div class="row profile">
             <div class="col-md-3">
                 <div class="profile-sidebar">
+					{% if ImgArr[0] %}
                     <div class="profile-userpic">
-                        {% if ImgArr[0] %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png' }}" alt="">
-                        {% endif %}
-                    </div>
+						<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+					</div>
+					{% endif %}
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
                             {% if name and surname %}
@@ -139,16 +139,13 @@
 						{% endif %}
 						{% if postal_code %}
                         <h5>Postal Code</h5>
-                        <div class="info">
-                            {{postal_code}}
-                        </div>
                         {% endif %}
                         <br>
-                        {% for image in ImgArr[1:]: %}
-                        <div class = "picture_container">
-                            <img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
-                        </div>
-                        {% endfor %}
+						{% for image in ImgArr[1:]: %}
+							<div class = "picture_container">
+								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
+							</div>
+						{% endfor %}
                     </div>
                 </div>
             </div>
