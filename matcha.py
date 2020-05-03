@@ -154,6 +154,7 @@ def home():
 		tagSports = request.form['sports']
 		tagMovies = request.form['movies']
 		tagMusic = request.form['music']
+		suburb = request.form['searchByLocation']
 	else:
 		minAge = 18
 		maxAge = 100
@@ -164,6 +165,7 @@ def home():
 		tagSports = "yes"
 		tagMovies = "yes"
 		tagMusic = "yes"
+		suburb = "Anywhere"
 	for cursor in col.find(query):
 		Food = cursor['Food']
 		Music = cursor['Music']
@@ -174,6 +176,7 @@ def home():
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Likes = cursor['Likes']
 		Dislikes = cursor['Dislikes']
+		Suburb = cursor['Suburb']
 
 	likesArr = Likes.split(", ")
 	dislikesArr = Dislikes.split(", ")
@@ -229,10 +232,11 @@ def home():
 			compatibleUser['Popularity'] >= minPopularity and compatibleUser['Popularity'] <= maxPopularity and
 			compatibleUser['Food'] == tagFood and compatibleUser['Music'] == tagMusic and
 			compatibleUser['Movies'] == tagMovies and compatibleUser['Animals'] == tagAnimals and
-			compatibleUser['Sports'] == tagSports
-			):
-				compatibleUsersArr.append(compatibleUser)
-		
+			compatibleUser['Sports'] == tagSports):
+				if (suburb.upper() == "ANYWHERE"):
+					compatibleUsersArr.append(compatibleUser)
+				elif (compatibleUser['Suburb'].upper() == suburb.upper()):
+					compatibleUsersArr.append(compatibleUser)
 		if (compatibleUsersArr):
 			Username1 = compatibleUsersArr[0]['username']
 			Name1 = compatibleUsersArr[0]['Name']
@@ -352,7 +356,7 @@ def preferences_handler():
 	name = request.form['name']
 	surname = request.form['surname']
 	gender = request.form['gender']
-	suburb = request.form['suburb']
+	suburb = request.form['location']
 	postal_code = request.form['postal code']
 	sexual = request.form['sexual']
 	bio = request.form['bio']
