@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 import hashlib, binascii, os, re
 from pymongo import MongoClient
 from datetime import date
-import pymongo
+import pymongo, random, string
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -31,19 +31,19 @@ mail = Mail(app)
 def populateDB():
 	col.delete_many( { } )
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tanya", "Surname": "Loft", "Age": 22, "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": hash_password("Password123!"), 
-	"Gender": "female", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "female", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Jeremiah", "Surname": "Dun", "Age": 22, "Email": "jerry@gmail.com", "username": "jerry", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tyler", "Surname": "Coughed", "Age": 22, "Email": "tc@gmail.com", "username": "tc", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Harry", "Surname": "Hairstyles", "Age": 22, "Email": "hs@gmail.com", "username": "hs", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": 22, "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	return index()
 
@@ -250,7 +250,7 @@ def home():
 			Suburb1 = compatibleUsersArr[0]['Suburb']
 			Gender1 = compatibleUsersArr[0]['Gender']
 			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
-			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4)
+			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
 	return render_template('home.html', nomatches=1, user=session['user'])
 
 def hash_password(password):
@@ -350,7 +350,7 @@ def thing():
 	return redirect(url_for('profile'))
 
 
-@app.route('/preferences/', methods=['POST'])
+@app.route('/preferences', methods=['POST'])
 def preferences_handler():
 	username = session['user']
 	name = request.form['name']
@@ -365,15 +365,25 @@ def preferences_handler():
 	movies = request.form['movies']
 	sports = request.form['sports']
 	food = request.form['food']
+	uploaded_images = request.files.getlist('img[]')
+	index = 0
+	for file in uploaded_images:
+		index += 1
+		if (index == 1):
+			imgName = randomString(15) + str(index)
+		else:
+			imgName =  imgName + ", " + randomString(15) + str(index)
+	if index > 5:
+		return render_template('preferences.html', error=1)
+	imgNameArray = imgName.split(', ')
+	for file in uploaded_images:
+		index -= 1
+		file.save(os.path.join(app.config['IMAGE_UPLOADS'], imgNameArray[index] + ".png"))
 	myquery = { "username": username }
-	newvalues = { "$set": {"Pref": "1", "Name": name, "Surname": surname, "Gender": gender, "Suburb": suburb, "Postal Code": postal_code, "Sexual Orientation": sexual, "Bio": bio, "Animals": animals, "Music": music, "Sports": sports, "Food": food, "Movies": movies} }
+	newvalues = { "$set": {"Pref": "1", "Name": name, "Surname": surname, "Gender": gender, "Suburb": suburb, "Postal Code": postal_code, "Sexual Orientation": sexual, "Bio": bio, "Images": imgName, "Animals": animals, "Music": music, "Sports": sports, "Food": food, "Movies": movies} }
 	col.update_one(myquery, newvalues)
-	img = request.files['img']
-	query = {"Name": name}
-	for cursor in col.find(query):
-		user_id = str(cursor['_id'])
-	img.save(os.path.join(app.config['IMAGE_UPLOADS'], user_id))
 	return redirect(url_for('home'))
+
 Pro_Img = "pexels-photo-937481.jpeg"
 Img1 = "pexels-photo-1236701.jpeg"
 Img2 = "pexels-photo-260367.jpeg"
@@ -456,6 +466,23 @@ def verify(username):
 	# col.update_one(myquery, newvalues)
 	# return render_template('index.html', verified=1)
 	
+def hash_password(password):
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
+    pwdhash = binascii.hexlify(pwdhash)
+    return (salt + pwdhash).decode('ascii')
+
+def verify_password(stored_password, provided_password):
+    salt = stored_password[:64]
+    stored_password = stored_password[64:]
+    pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), str(salt).encode('ascii'), 100000)
+    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+    return pwdhash == stored_password
+
+def randomString(stringLength=8):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))
+
 if (__name__ == "__main__"):
     app.run(debug = True)
 

@@ -61,10 +61,10 @@
 			{% else %}
             <div class="col-md-3">
                 <div class="profile-sidebar">
+					{% if ImgArr[0] %}
                     <div class="profile-userpic">
-                        {% if pro_img %}
-                        <img src="../static/profile_pictures/{{ pro_img }}" class="img-responsive" alt="">
-                        {% endif %}
+						<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+					{% endif %}
                     </div>
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
@@ -110,6 +110,12 @@
                         <div class="info">
                             {{suburb}}
 						</div>
+						{% endif %}
+						{% for image in ImgArr[1:]: %}
+							<div class = "picture_container">
+								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
+							</div>
+						{% endfor %}
                         {% endif %}
                         <br>
                         <br>
