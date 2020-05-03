@@ -33,10 +33,13 @@
             <h2>Search and Filter</h2>
 			Search By Age Range <input type = "number"  min="18" max="100" value="18" name="searchByAgeMin"/> : <input type = "number" value="100" name="searchByAgeMax"  min="18" max="100" />
             <br>
+            <br>
             Search By Location <input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
             <br>
+            <br>
             Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
-			<br>	
+            <br>
+            <br>	
             <input type="checkbox" name="animals" value="yes" checked>
             <input type="hidden" name="animals" value="no">
 			<label for="animals">Animals</label>
@@ -52,6 +55,7 @@
             <input type="checkbox" name="music" value="yes" checked>
             <input type="hidden" name="music" value="no">
 			<label for="music">Music</label>
+            <br>
             <br>
 			<button type="submit" value="submitFilter" class="btn btn-success">Submit</button>
 		</form>
@@ -86,6 +90,7 @@
                 <div class = "profile_container">
                     <div class="profile-content">
                         <h3 style="align-content: center;">User Information</h3>
+                        <br>
 						{% if bio %}
                         <h5>Bio</h5>
                         <div class="info">
