@@ -18,14 +18,17 @@
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
+        <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
+        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
-
-    <div class="container">
+    
+    <center><div class="container">
+        <h1>Home</h1>
         <form action=" {{ url_for('home') }}" method = "POST" enctype="multipart/form-data">
             <h2>Search and Filter</h2>
 			Search By Age Range <input type = "number"  min="18" max="100" value="18" name="searchByAgeMin"/> : <input type = "number" value="100" name="searchByAgeMax"  min="18" max="100" />
-			<input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
+			Search By Location <input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
 			Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
 			<br />	
             <input type="checkbox" name="animals" value="yes" checked>
@@ -43,8 +46,8 @@
             <input type="checkbox" name="music" value="yes" checked>
             <input type="hidden" name="music" value="no">
 			<label for="music">Music</label>
-
-			<button type="submit" value="submitFilter">Submit</button>
+            <br>
+			<button type="submit" value="submitFilter" class="btn btn-success">Submit</button>
 		</form>
         <div class="row profile">
 			{% if nomatches == 1 %}
@@ -100,13 +103,17 @@
                         <div class="info">
                             {{suburb}}
 						</div>
-						{% endif %}
+                        {% endif %}
+                        <br>
+                        <br>
+                        <a href="{{ url_for('viewprofile', username = username) }}"><button class="btn btn-dark">View {{username}}'s full profile</button></a>
                     </div>
+                    
                 </div>
 			</div>
 			{% endif %}
         </div>
-    </div>
+    </div></center>
     <br>
     <br>    
 </body>
