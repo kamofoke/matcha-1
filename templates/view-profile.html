@@ -142,8 +142,13 @@
 							</div>
 						{% endfor %}
                         </div>
-					</div>
-					<a href = "{{ url_for('block', blockedUser = username) }}"><button>Block User</button></a>
+                    </div>
+                    <br>
+                    {% if blocked == 0 %}
+                    <a href = "{{ url_for('block', blockedUser = username) }}"><button class="btn btn-danger">Block User</button></a>
+                    {% else %}
+                    <a href = "{{ url_for('unblock', blockedUser = username) }}"><button class="btn btn-danger">Unblock User</button></a>
+                    {% endif %}
                 </div>
             </div>
         </div>

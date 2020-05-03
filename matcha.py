@@ -332,9 +332,20 @@ def block(blockedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userBlocked = user['Blocked']
-	query = ({"username": blockedUser})
-	user = col.find_one(query)
 	userBlocked = blockedUser if userBlocked == '' else userBlocked + ', ' + blockedUser
+	query = { "$set": {'Blocked': userBlocked }}
+	col.update_one({ "username": session['user'] }, query)
+	col.update_one({ "username": "Admin" }, query )
+	return redirect(url_for('home'))
+
+@app.route('/unblock<string:blockedUser>')
+def unblock(blockedUser):
+	query = ({"username": session['user']})
+	user = col.find_one(query)
+	userBlocked = user['Blocked']
+	userBlockedArr = userBlocked.split(", ")
+	userBlockedArr = userBlockedArr.remove(blockedUser)
+	userBlocked = "" if userBlockedArr == None else ", ".join(userBlockedArr)
 	query = { "$set": {'Blocked': userBlocked }}
 	col.update_one({ "username": session['user'] }, query)
 	col.update_one({ "username": "Admin" }, query )
@@ -463,12 +474,20 @@ def viewprofile(username):
 		Noti = cursor['Noti']
 		userProfileViews = cursor['ProfileViews']
 		Image_Name_Arr = cursor['Images'].split(', ')
+	query = { "username": session['user'] }
+	user = col.find_one(query)
+	blockedUsers = user['Blocked']
+	blockedUsers = blockedUsers.split(', ')
+	if (username in blockedUsers):
+		blocked = 1
+	else:
+		blocked = 0
 	userProfileViewsArr = userProfileViews.split(', ')
 	if (session['user'] not in userProfileViewsArr):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr)
+	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr)
 
 @app.route('/profileviews/')
 def profileviews():
