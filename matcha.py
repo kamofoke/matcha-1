@@ -19,12 +19,15 @@ cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/
 db = cluster["Matcha"]
 col = db["Users"]
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_username'] = 'matcha13.noreply@gmail.com'
-app.config['MAIL_PASSWORD'] = 'matcha1313'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+    "MAIL_PASSWORD": 'matcha1313'
+}
+app.config.update(mail_settings)
 mail = Mail(app)
 
 @app.route('/populatedb')
@@ -77,9 +80,9 @@ def signup():
 							if password == passrep:
 								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
-								# msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
-								# msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
-								# mail.send(msg)
+								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
+								msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
+								mail.send(msg)
 							else:
 								return render_template('index.html', error = 1)
 						else:
@@ -129,15 +132,11 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-	# if request.method == "GET":
-	# 	return render_template('home.html')
 	session.pop("user", None)
 	return render_template('index.html')
 		
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-	# if request.method == "GET":
-	# 	return render_template('home.html')
 	try:
 		username = session['user']
 	except KeyError:
@@ -366,7 +365,7 @@ def preferences_handler():
 	movies = request.form['movies']
 	sports = request.form['sports']
 	food = request.form['food']
-	uploaded_images = request.files.getlist('img[]')
+	uploaded_images = request.files.getlist('img')
 	index = 0
 	for file in uploaded_images:
 		index += 1
@@ -454,14 +453,10 @@ def profilelikes():
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
-	if request.method == 'GET':
-		return "GET %s" %username
-	elif request.method == 'POST':
-		return "POST %s" %username
-	# myquery = { "username": username }
-	# newvalues = { "$set": {"Verify": "1"} }
-	# col.update_one(myquery, newvalues)
-	# return render_template('index.html', verified=1)
+	myquery = { "username": username }
+	newvalues = { "$set": {"Verify": "1"} }
+	col.update_one(myquery, newvalues)
+	return render_template('index.html', verified=1)
 	
 def hash_password(password):
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
