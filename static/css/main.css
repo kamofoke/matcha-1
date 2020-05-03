@@ -126,10 +126,13 @@ body
   text-align: center;
   margin-top: auto;
   border: thin solid lightblue;
+  background-color: lightblue;
   width: 25vw;
   word-wrap: break-word;
 }
-
+h1, h2, h3, h5 {
+  font-weight: bold;
+}
 .profile_container
 {
   padding: .1vw;
