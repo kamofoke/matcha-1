@@ -366,7 +366,6 @@ def preferences_handler():
 	sports = request.form['sports']
 	food = request.form['food']
 	uploaded_images = request.files.getlist('img')
-	print(uploaded_images)
 	index = 0
 	for file in uploaded_images:
 		index += 1
