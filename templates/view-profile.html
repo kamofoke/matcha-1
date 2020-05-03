@@ -16,17 +16,11 @@
 <body>
 
 	<ul class="topnav">
-<<<<<<< HEAD
-	  <li><a href="/home">Home</a></li>
-	  <li><a class="active" href="/profile">Profile</a></li>
-	  <li><a href="#contact">-blank-</a></li>
-=======
 	  <li><a href="{{ url_for('home') }}">Home</a></li>
       <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
       <li><a href="{{ url_for('matches') }}">Matches</a></li>
       <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
       <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
->>>>>>> 1058dc3a425e5d8f2a5d60b19365519baf49ff1e
 	  <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
 	</ul>
 	
@@ -34,7 +28,7 @@
 	</div>
 	
     <center><div class="container">
-        <h1>My Profile</h1>
+        <h1>{{username}}'s Profile</h1>
         <div class="row profile">
             <div class="col-md-3">
                 <div class="profile-sidebar">
@@ -52,14 +46,6 @@
                         </div>
                     </div>
                     <div class="profile-usermenu">
-					{% if noti == "1" %}
-					<a href="/notis">Switch Off Notifications</a>
-					{% endif %}
-					{% if noti == "0" %}
-					<a href="/notis">Switch On Notifications</a>
-                    {% endif %}
-                    <br>
-                    <a href="{{ url_for('editprofile') }}">Edit Profile</a>
                         <ul class="nav">
                             <li>
                                 <a href="#">
@@ -150,11 +136,11 @@
                         </div>
                         {% endif %}
                         <br>
-                        {% for image in ImgArr[1:]: %}
-                        <div class = "picture_container">
-                            <img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
-                        </div>
-                        {% endfor %}
+						{% for image in ImgArr[1:]: %}
+							<div class = "picture_container">
+								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
+							</div>
+						{% endfor %}
                     </div>
                 </div>
             </div>

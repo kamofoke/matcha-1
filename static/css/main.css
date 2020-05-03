@@ -1,6 +1,6 @@
 body 
 {
-  background: #F1F3FA;
+  background: white;
 }
 
 .profile 
@@ -10,8 +10,8 @@ body
 
 .profile-sidebar 
 {
-  padding: 20px 0 10px 0;
-  background: #fff;
+  padding: 20px 20px 10px 20px;
+  border: thin solid black;
 }
 
 .profile-userpic img 
@@ -118,7 +118,6 @@ body
 .profile-content 
 {
   padding: 20px;
-  background: #fff;
   min-height: 460px;
 }
 
@@ -127,22 +126,22 @@ body
   text-align: center;
   margin-top: auto;
   border: thin solid lightblue;
+  background-color: lightblue;
   width: 25vw;
   word-wrap: break-word;
 }
-
+h1, h2, h3, h5 {
+  font-weight: bold;
+}
 .profile_container
 {
   padding: .1vw;
-  border: thin solid red;
+  border: thin solid black;
   margin: .01vw .5vw;
   min-height: 300px;
   width: 35vw;
 }
 .picture_container
 {
-  display: inline-block;
-  border: thin solid pink;
-  height: 25vw;
-  width: 25vw;
+  padding: 10px 0 10px 0;
 }
