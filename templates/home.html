@@ -28,9 +28,11 @@
         <form action=" {{ url_for('home') }}" method = "POST" enctype="multipart/form-data">
             <h2>Search and Filter</h2>
 			Search By Age Range <input type = "number"  min="18" max="100" value="18" name="searchByAgeMin"/> : <input type = "number" value="100" name="searchByAgeMax"  min="18" max="100" />
-			Search By Location <input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
-			Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
-			<br />	
+            <br>
+            Search By Location <input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
+            <br>
+            Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
+			<br>	
             <input type="checkbox" name="animals" value="yes" checked>
             <input type="hidden" name="animals" value="no">
 			<label for="animals">Animals</label>
