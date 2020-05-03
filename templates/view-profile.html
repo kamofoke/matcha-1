@@ -26,7 +26,7 @@
 	</div>
 	
     <div class="container">
-        <h1>My Profile</h1>
+        <h1>{{username}}'s Profile</h1>
         <div class="row profile">
             <div class="col-md-3">
                 <div class="profile-sidebar">
@@ -44,14 +44,6 @@
                         </div>
                     </div>
                     <div class="profile-usermenu">
-					{% if noti == "1" %}
-					<a href="/notis">Switch Off Notifications</a>
-					{% endif %}
-					{% if noti == "0" %}
-					<a href="/notis">Switch On Notifications</a>
-                    {% endif %}
-                    <br>
-                    <a href="{{ url_for('editprofile') }}">Edit Profile</a>
                         <ul class="nav">
                             <li>
                                 <a href="#">

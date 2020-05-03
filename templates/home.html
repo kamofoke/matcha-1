@@ -60,68 +60,16 @@
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
                             {% if name and surname %}
+                            <a href="{{ url_for('viewprofile', username = username) }}">
                             <h4>{{name}}</h4>
                             <h4>{{surname}}</h4>
+                            </a>
                             {% endif %}
                         </div>
                     </div>
                     <div class="profile-userbuttons">
                         <a href = "{{ url_for('like', likedUser = username) }}" class="fa fa-heart" style="font-size:30px;color:pink;"></a>
                         <a href = "{{ url_for('dislike', dislikedUser = username) }}" class="fa fa-times" style="font-size:30px;color:red;"></a>
-                    </div>
-                    <div class="profile-usermenu">
-                        <ul class="nav">
-                            <li>
-                                <a href="#">
-                                <i class="glyphicon glyphicon-cutlery"></i>
-                                {% if food == "yes" %}
-                                Food <i class="fa fa-check"></i></a>
-                                {% endif %}
-                                {% if food == "no" %}
-                                Food <i class="fa fa-times"></i></a>
-                                {% endif %}
-                            </li>
-                            <li>
-                                <a href="#">
-                                <i class="glyphicon glyphicon-music"></i>
-                                {% if music == "yes" %}
-                                Music <i class="fa fa-check"></i></a>
-                                {% endif %}
-                                {% if music == "no" %}
-                                Music <i class="fa fa-times"></i></a>
-                                {% endif %}
-                            </li>
-                            <li>
-                                <a href="#">
-                                <i class="glyphicon glyphicon-film"></i>
-                                {% if movies == "yes" %}
-                                Movies <i class="fa fa-check"></i></a>
-                                {% endif %}
-                                {% if movies == "no" %}
-                                Movies <i class="fa fa-times"></i></a>
-                                {% endif %}
-                            </li>
-                            <li>
-                                <a href="#">
-                                <i class="icon ion-ios-paw"></i>
-                                {% if animals == "yes" %}
-                                Animals <i class="fa fa-check"></i></a>
-                                {% endif %}
-                                {% if animals == "no" %}
-                                Animals <i class="fa fa-times"></i></a>
-                                {% endif %}
-                            </li>
-                            <li>
-                                <a href="#">
-                                <i class="ionicons ion-ios-basketball"></i>
-                                {% if sports == "yes" %}
-                                Sports <i class="fa fa-check"></i></a>
-                                {% endif %}
-                                {% if sports == "no" %}
-                                Sports <i class="fa fa-times"></i></a>
-                                {% endif %}
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -153,25 +101,6 @@
                             {{suburb}}
 						</div>
 						{% endif %}
-                        <div class = "picture_container">
-                            {% if img1 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img1}}" alt=""></div>
-                            {% endif %}
-                        <div class = "picture_container">
-                            {% if img2 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img2}}" alt="">
-                            {% endif %}
-                        </div>
-                        <div class = "picture_container">
-                            {% if img3 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img3}}" alt="">
-                            {% endif %}
-                        </div>
-                        <div class = "picture_container">
-                            {% if img4 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img4}}" alt="">
-                            {% endif %}
-                        </div>
                     </div>
                 </div>
 			</div>
