@@ -18,6 +18,8 @@ app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
 db = cluster["Matcha"]
 col = db["Users"]
+#col_likes= db["Likes"]
+col_notis= db["Notifications"]
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -252,6 +254,9 @@ def like(likedUser):
 		userMatches = likedUser if userMatches == "" else userMatches + ' ,' + likedUser
 		userLikes = likedUser if userLikes == "" else userLikes + ' ,' + likedUser
 		query = { "$set": {'Matches': userMatches, 'Likes': userLikes}}
+		print("if")
+		print(userlikes)
+		print(userMatches)
 		col.update_one({ "username": session['user'] }, query)
 		query = { "$set": {'Matches': compatibleUserMatches }}
 		col.update_one({ "username": likedUser }, query)
@@ -259,6 +264,9 @@ def like(likedUser):
 		userLikes = likedUser if userLikes == "" else userLikes + ' ,' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
+		print("else\n")
+		print(userLikes)
+		print(likedUser)
 	return redirect(url_for('home'))
 	
 
