@@ -28,6 +28,6 @@
         <h2>Your Matches</h2>
         {% endif %}
         {% for match in matches %}
-        <p>{{match}}</p>
+        <a href="{{ url_for('viewprofile', username = match) }}"><p>{{match}}</p></a>
         {%endfor%}
     </div>

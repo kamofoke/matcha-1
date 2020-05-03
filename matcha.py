@@ -397,7 +397,27 @@ def profile():
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Noti = cursor['Noti']
 	return render_template('profile.html', user=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4, noti=Noti)
- 
+
+@app.route('/viewprofile/<username>')
+def viewprofile(username):
+	query = {"username": username}
+	for cursor in col.find(query):
+		Name = cursor['Name']
+		Surname = cursor['Surname']
+		Food = cursor['Food']
+		Music = cursor['Music']
+		Movies = cursor['Movies']
+		Animals = cursor['Animals']
+		Sports = cursor['Sports']
+		Bio = cursor['Bio']
+		Suburb = cursor['Suburb']
+		Gender = cursor['Gender']
+		Postal_Code = cursor['Postal Code']
+		Sexual_Orientation = cursor['Sexual Orientation']
+		Noti = cursor['Noti']
+	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4, noti=Noti)
+
+
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
 	if request.method == 'GET':
