@@ -13,11 +13,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="150" height="auto"></div>
+	<div id="logo"><img class = "center" src="{{ url_for('static', filename='matcha-logo.png') }}" alt="" width="150" height="auto"></div>
 </head>
 ​
 <body>
-​
+	{% if error == 1 %}
+		<h3>Please do not select more than 5 images</h3>
+	{% endif %}
 ​{% if completed == 1 %}
 	<h3 style="color:brown; font-size: 1vw; font-family: Verdana, Geneva, Tahoma, sans-serif;">You successfully saved your preferences</h3>
 {% endif %}
@@ -53,7 +55,7 @@ Postal Code: <br><input name="postal code" type="text">
 <input type="radio" name="food" value="yes">Yes
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
-<br>Select images: <input type="file" name="img" multiple>
+<br>Select images: <input type="file" name="img[]" multiple="">
 <br/><input type="submit" name = "pref" value = "Submit"/>
 </form><br/>
 <button class="button.login">Enable Location</button><br/>
