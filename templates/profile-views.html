@@ -24,12 +24,12 @@
     </ul>
 
     <center><div class="container">
-        {% if not matches[0] %}
-            <h1>You have no matches</h1>
+        {% if not profileViews[0] %}
+            <h1>You have no profile views</h1>
         {% else %}
-        <h1>Your Matches</h1>
+        <h1>Your Profile Views</h1>
         {% endif %}
-        {% for match in matches %}
-        <a href="{{ url_for('viewprofile', username = match) }}"><p>{{match}}</p></a>
+        {% for profileView in profileViews %}
+        <a href="{{ url_for('viewprofile', username = profileView) }}"><p>{{profileView}}</p></a>
         {%endfor%}
     </div></center>
