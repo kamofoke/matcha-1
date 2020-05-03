@@ -19,7 +19,11 @@
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		{% if username == Admin %}
+		<li><a href="{{ url_for('adminblockedusers') }}">Admin</a></li>
+		{% endif %}
+		
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
     
