@@ -106,12 +106,6 @@
                             {{suburb}}
 						</div>
 						{% endif %}
-						{% for image in ImgArr[1:]: %}
-							<div class = "picture_container">
-								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
-							</div>
-						{% endfor %}
-                        {% endif %}
                         <br>
                         <br>
                         <a href="{{ url_for('viewprofile', username = username) }}"><button class="btn btn-dark">View {{username}}'s full profile</button></a>
@@ -119,9 +113,9 @@
                     
                 </div>
 			</div>
-			{% endif %}
         </div>
     </div></center>
+	{% endif %}
     <br>
     <br>    
 </body>

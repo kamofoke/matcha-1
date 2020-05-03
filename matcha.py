@@ -246,6 +246,7 @@ def home():
 			Suburb1 = compatibleUsersArr[0]['Suburb']
 			Gender1 = compatibleUsersArr[0]['Gender']
 			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
+			Image_Name_Arr = (compatibleUsersArr[0]['Images']).split(', ')
 			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
 	return render_template('home.html', nomatches=1, user=session['user'])
 
@@ -380,12 +381,6 @@ def preferences_handler():
 	col.update_one(myquery, newvalues)
 	return redirect(url_for('home'))
 
-Pro_Img = "pexels-photo-937481.jpeg"
-Img1 = "pexels-photo-1236701.jpeg"
-Img2 = "pexels-photo-260367.jpeg"
-Img3 = "pexels-photo-3497181.jpeg"
-Img4 = "pexels-photo-3497182.jpeg"
-
 @app.route('/editprofile')
 def editprofile():
 	return render_template('preferences.html', username = session['user'])
@@ -408,7 +403,8 @@ def profile():
 		Postal_Code = cursor['Postal Code']
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Noti = cursor['Noti']
-	return render_template('profile.html', user=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4, noti=Noti)
+		Image_Name_Arr = cursor['Images'].split(', ')
+	return render_template('profile.html', user=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti)
 
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
@@ -428,12 +424,13 @@ def viewprofile(username):
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Noti = cursor['Noti']
 		userProfileViews = cursor['ProfileViews']
+		Image_Name_Arr = cursor['Images'].split(', ')
 	userProfileViewsArr = userProfileViews.split(', ')
 	if (session['user'] not in userProfileViewsArr):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, pro_img=Pro_Img, img1=Img1, img2=Img2, img3=Img3, img4=Img4, noti=Noti)
+	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr)
 
 @app.route('/profileviews/')
 def profileviews():
