@@ -177,9 +177,32 @@ def createUsers():
 			'Willowild'
 			]
 		location = locationArr[random.randint(0, 74)]
-		if (perPrefArr)
+		animals = 0
+		food = 0
+		movies = 0
+		music = 0
+		sports = 0
+		dud = 0
+		while (dud < len(perPrefArr)):
+			if (perPrefArr[dud] == 'Animals'):
+				animals = 1
+			if (perPrefArr[dud] == 'Food'):
+				food = 1
+			if (perPrefArr[dud] == 'Movies'):
+				movies = 1
+			if (perPrefArr[dud] == 'Music'):
+				music = 1
+			if (perPrefArr[dud] == 'Sports'):
+				sports = 1
+			dud += 1
+		animalsQuery = 'yes' if animals == 1 else 'no'
+		foodQuery = 'yes' if food == 1 else 'no'
+		moviesQuery = 'yes' if movies == 1 else 'no'
+		musicQuery = 'yes' if music == 1 else 'no'
+		sportsQuery = 'yes' if sports == 1 else 'no'
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
-				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 'Bio': 'I am Tanya', 'Animals': 'yes', 'Music': 'yes', 'Sports': 'yes', 'Food': 'yes', 'Noti': '1', 'Movies': 'yes'}
+				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
+				'Bio': 'I am Tanya', 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Noti': '1', 'Movies': moviesQuery}
 		# col.insert_one(query)
 		print(query)
 		i += 1
