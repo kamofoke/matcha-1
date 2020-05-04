@@ -16,9 +16,9 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 
-cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
-db = cluster["Matcha"]
-col = db["Users"]
+# cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
+# db = cluster["Matcha"]
+# col = db["Users"]
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -50,14 +50,14 @@ def populateDB():
 
 @app.route('/')
 def index():
-	res = requests.get('https://ipinfo.io')
-	location_data = res.json()
-	city = location_data['city']
-	country = location_data['country']
-	lat_long = location_data['loc'].split(',')
-	latitude = lat_long[0]
-	longitude = lat_long[1]
-	return render_template('index.html', location_data=location_data, city=city, country=country, latitude=latitude, longitude=longitude)
+	# res = requests.get('https://ipinfo.io')
+	# location_data = res.json()
+	# city = location_data['city']
+	# country = location_data['country']
+	# lat_long = location_data['loc'].split(',')
+	# latitude = lat_long[0]
+	# longitude = lat_long[1]
+	return render_template('index.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -459,7 +459,45 @@ def verify(username):
 	# newvalues = { "$set": {"Verify": "1"} }
 	# col.update_one(myquery, newvalues)
 	# return render_template('index.html', verified=1)
-	
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+	if (request.method == 'GET'):
+		err = ''
+		return render_template('reset_password.html', err=err)
+	elif (request.method == 'POST'):
+		err = ''
+		email = request.form['email']
+		if (len(email) > 0):
+			emailCheck = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+			if (re.search(emailCheck, email)):
+				err = 0
+				# also need to add a check against non-existing accounts
+				token = hash_password(email)
+				# set token in db
+				# msg = Message("Matcha Password Reset", sender="noreply@matcha.com", recipients=[email])
+				# msg.body = "Hello!\n\nYou have requested a password reset. Please click the link below to verify your account and reset your password.\n\nhttp://127.0.0.1:5000/reset?email={0}&token={1}.\n\nThank you.\n".format(email, token)
+				# mail.send(msg)
+				return render_template('reset_password.html', err=err)
+			elif not (re.search(emailCheck, email)):
+				err = 1
+				return render_template('reset_password.html', err=err)
+		else :
+			err = 2
+			return render_template('reset_password.html', err=err)
+
+@app.route('/reset', methods=['GET', 'POST'])
+def reset():
+	if (request.method == 'GET'):
+		email = request.args.get('email')
+		token = request.args.get('token')
+		query = {'Email': email, 'Reset_token' : token}
+		valid = col.find(query)
+		return render_template('reset_password.html')
+	elif (request.method == 'POST'):
+		check = col.update_one()
+		return render_template('index.html', successful_reset=check)
+
 if (__name__ == "__main__"):
     app.run(debug = True)
 
