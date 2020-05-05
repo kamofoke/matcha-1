@@ -15,9 +15,13 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 
-cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
-db = cluster["Matcha"]
-col = db["Users"]
+# cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
+# db = cluster["Matcha"]
+# col = db["Users"]
+
+cluster = MongoClient('localhost', 27017)
+db = cluster.matcha
+col = db.users
 
 mail_settings = {
 	"MAIL_SERVER": 'smtp.gmail.com',

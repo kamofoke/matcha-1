@@ -9,6 +9,10 @@ fake = Faker()
 # db = cluster['Matcha']
 # col = db['Users']
 
+cluster = MongoClient('localhost', 27017)
+db = cluster.matcha
+col = db.users
+
 # Pref:'1'
 # Verify:'1'
 # Matches:''
@@ -43,7 +47,7 @@ def hash_password(password):
 
 def createUsers():
 	i = 0
-	while (i < 10):
+	while (i < 500):
 		# sexual orientation
 		randSO = random.randint(0, 2)
 		if (randSO == 0):
@@ -65,12 +69,12 @@ def createUsers():
 		elif (randGen == 1): #female
 			gender = 'female'
 			name = fake.first_name_female()
-			surname = fake.last_name_male()
+			surname = fake.last_name_female()
 			while (len(name) < 5):
-				name = fake.first_name_male()
-			surname = fake.last_name_male()
+				name = fake.first_name_female()
+			surname = fake.last_name_female()
 			while (len(surname) < 6):
-				surname = fake.last_name_male()
+				surname = fake.last_name_female()
 		nameLen = len(name)
 		surLen = len(surname)
 		first_letter = name[0]
@@ -203,7 +207,7 @@ def createUsers():
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
 				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
 				'Bio': 'I am Tanya', 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Noti': '1', 'Movies': moviesQuery}
-		# col.insert_one(query)
+		col.insert_one(query)
 		print(query)
 		i += 1
 
