@@ -206,7 +206,7 @@ def createUsers():
 		sportsQuery = 'yes' if sports == 1 else 'no'
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
 				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
-				'Bio': 'I am Tanya', 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Noti': '1', 'Movies': moviesQuery}
+				'Bio': 'I am ' + name , 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Noti': '1', 'Movies': moviesQuery}
 		col.insert_one(query)
 		print(query)
 		i += 1
