@@ -563,46 +563,84 @@ def verify(username):
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
 	if (request.method == 'GET'):
+		reset = 0
 		err = ''
-		return render_template('reset_password.html', err=err)
+		return render_template('reset_password.html', err=err, reset=reset)
 	elif (request.method == 'POST'):
+		reset = 0
 		err = ''
 		email = request.form['email']
 		if (len(email) > 0):
 			emailCheck = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 			if (re.search(emailCheck, email)):
-				err = 0
 				findExisting = { 'Email' : email }
 				result = col.find_one(findExisting)
 				if (result == None):
-					print('I aint found shit')
-					return render_template('reset_password.html')
+					err = 3
+					return render_template('reset_password.html', err=err, reset=reset)
 				else:
+					err = 0
 					token = hash_password(email)
-				# also need to add a check against non-existing accounts
-				# set token in db
-				# msg = Message("Matcha Password Reset", sender="noreply@matcha.com", recipients=[email])
-				# msg.body = "Hello!\n\nYou have requested a password reset. Please click the link below to verify your account and reset your password.\n\nhttp://127.0.0.1:5000/reset?email={0}&token={1}.\n\nThank you.\n".format(email, token)
-				# mail.send(msg)
-				return render_template('reset_password.html', err=err)
+					oldToken = { 'Email' : email }
+					newToken = { '$set': { 'Token' : token } }
+					res = col.update_one(oldToken, newToken)
+					msg = Message("Matcha Password Reset", sender="noreply@matcha.com", recipients=[email])
+					msg.body = "Hello!\n\nYou have requested a password reset. Please click the link below to verify your account and reset your password.\n\nhttp://127.0.0.1:5000/reset?email={0}&token={1}.\n\nThank you.\n".format(email, token)
+					mail.send(msg)
+					return render_template('reset_password.html', err=err, reset=reset)
 			elif not (re.search(emailCheck, email)):
 				err = 1
-				return render_template('reset_password.html', err=err)
+				return render_template('reset_password.html', err=err, reset=reset)
 		else :
 			err = 2
-			return render_template('reset_password.html', err=err)
+			return render_template('reset_password.html', err=err, reset=reset)
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset():
 	if (request.method == 'GET'):
+		err = ''
+		reset = 1
 		email = request.args.get('email')
 		token = request.args.get('token')
-		query = {'Email': email, 'Reset_token' : token}
-		valid = col.find(query)
-		return render_template('reset_password.html')
+		emailQuery = {'Email' : email}
+		tokenQuery = {'Token' : token}
+		validEmail = col.find_one(emailQuery)
+		validToken = col.find_one(tokenQuery)
+		if (validEmail == None or validToken == None):
+			err = 4
+			return render_template('reset_password.html', err=err, reset=reset)
+		else:
+			err = 5
+			return render_template('reset_password.html', err=err, reset=reset)
 	elif (request.method == 'POST'):
+		err = ''
+		reset = 1
+		email = request.form['email']
+		password = request.form['newPassword']
+		confirmPassword = request.form['confirmNewPassword']
+		matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
+		if (matches):
+			if (password == confirmPassword):
+				usedPasswordQuery = { 'Email' : email ,'Password' : password } ####
+				found = col.find({}, usedPasswordQuery) ####
+				if (found == None): ####
+					err = 6
+					update = {'Email' : } ####
+					return render_template('index.html', err=err, reset=reset)
+				else:
+					err = 9
+					return render_template('index.html', err=err, reset=reset)
+			else:
+				err = 7
+				return render_template('index.html', err=err, reset=reset)
+		else:
+			err = 8
+			return render_template('index.html', err=err, reset=reset)
+		oldPassword = { 'Email' : email, 'Token' : token }
+		newPassword = { '$set': { 'Token' : '' , 'Password' : password} }
+		res = col.update_one(oldToken, newToken)
 		check = col.update_one()
-		return render_template('index.html', successful_reset=check)
+		return render_template('index.html', err=err, reset=reset)
 
 def hash_password(password):
 	salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')

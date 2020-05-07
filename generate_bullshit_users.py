@@ -47,7 +47,7 @@ def hash_password(password):
 
 def createUsers():
 	i = 0
-	while (i < 10):
+	while (i < 500):
 		# sexual orientation
 		randSO = random.randint(0, 2)
 		if (randSO == 0):
@@ -207,9 +207,11 @@ def createUsers():
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
 				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
 				'Bio': 'I am ' + name , 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Movies': moviesQuery, 'Noti': '1', 
-				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5'}
+				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5', 'Token' : ''}
 		col.insert_one(query)
 		print(query)
 		i += 1
+	query = {"username": "Admin", "Password": hash_password("Admin123!"), "Blocked": ""}
+	col.insert_one(query)
 
 createUsers()
