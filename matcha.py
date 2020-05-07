@@ -19,13 +19,17 @@ app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 # db = cluster["Matcha"]
 # col = db["Users"]
 
+cluster = MongoClient('localhost', 27017)
+db = cluster.matcha
+col = db.users
+
 mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
-    "MAIL_PASSWORD": 'matcha1313'
+	"MAIL_SERVER": 'smtp.gmail.com',
+	"MAIL_PORT": 465,
+	"MAIL_USE_TLS": False,
+	"MAIL_USE_SSL": True,
+	"MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+	"MAIL_PASSWORD": 'matcha1313'
 }
 app.config.update(mail_settings)
 mail = Mail(app)
