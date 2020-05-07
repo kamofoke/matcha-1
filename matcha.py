@@ -575,7 +575,7 @@ def reset_password():
 		reset = 0
 		err = ''
 		return render_template('reset_password.html', err=err, reset=reset)
-	elif (request.method == 'POST'):
+	if (request.method == 'POST'):
 		reset = 0
 		err = ''
 		email = request.form['email']
@@ -621,7 +621,7 @@ def reset():
 		else:
 			err = 5
 			return render_template('reset_password.html', err=err, reset=reset)
-	elif (request.method == 'POST'):
+	if (request.method == 'POST'):
 		err = ''
 		reset = 1
 		email = request.form['email']
@@ -632,17 +632,15 @@ def reset():
 			if (password == confirmPassword):
 				err = 6
 				oldPassword = { 'Email' : email }
-				newPassword = { '$set': { 'Token' : '' , 'Password' : password} }
+				newPassword = { '$set': { 'Token' : '' , 'Password' : hash_password(password)} }
 				res = col.update_one(oldPassword, newPassword)
-				return render_template('index.html', err=err, reset=reset)
+				return redirect(url_for('index'))
 			else:
 				err = 7
 				return render_template('index.html', err=err, reset=reset)
 		else:
 			err = 8
 			return render_template('index.html', err=err, reset=reset)
-		oldPassword = { 'Email' : email, 'Token' : token }
-		newPassword = { '$set': { 'Token' : '' , 'Password' : password} }
 		return render_template('index.html', err=err, reset=reset)
 
 def hash_password(password):
