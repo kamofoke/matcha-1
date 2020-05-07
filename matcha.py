@@ -24,12 +24,12 @@ db = cluster.matcha
 col = db.users
 
 mail_settings = {
-	"MAIL_SERVER": 'smtp.gmail.com',
-	"MAIL_PORT": 465,
-	"MAIL_USE_TLS": False,
-	"MAIL_USE_SSL": True,
-	"MAIL_USERNAME": 'matcha13.noreply@gmail.com',
-	"MAIL_PASSWORD": 'matcha1313'
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+    "MAIL_PASSWORD": 'matcha1313'
 }
 app.config.update(mail_settings)
 mail = Mail(app)
@@ -554,12 +554,13 @@ def verify(username):
 	try:
 		username = session['user']
 	except KeyError:
-		return render_template('index.html')	
-	myquery = { "username": username }
-	newvalues = { "$set": {"Verify": "1"} }
-	col.update_one(myquery, newvalues)
-	return render_template('index.html', verified=1)
-	
+		return render_template('index.html')
+	finally:
+		myquery = { "username": username }
+		newvalues = { "$set": {"Verify": "1"} }
+		col.update_one(myquery, newvalues)
+		return render_template('index.html', verified=1)
+
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
 	if (request.method == 'GET'):
@@ -621,15 +622,11 @@ def reset():
 		matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 		if (matches):
 			if (password == confirmPassword):
-				usedPasswordQuery = { 'Email' : email ,'Password' : password } ####
-				found = col.find({}, usedPasswordQuery) ####
-				if (found == None): ####
-					err = 6
-					update = {'Email' : } ####
-					return render_template('index.html', err=err, reset=reset)
-				else:
-					err = 9
-					return render_template('index.html', err=err, reset=reset)
+				err = 6
+				oldPassword = { 'Email' : email }
+				newPassword = { '$set': { 'Token' : '' , 'Password' : password} }
+				res = col.update_one(oldPassword, newPassword)
+				return render_template('index.html', err=err, reset=reset)
 			else:
 				err = 7
 				return render_template('index.html', err=err, reset=reset)
@@ -638,8 +635,6 @@ def reset():
 			return render_template('index.html', err=err, reset=reset)
 		oldPassword = { 'Email' : email, 'Token' : token }
 		newPassword = { '$set': { 'Token' : '' , 'Password' : password} }
-		res = col.update_one(oldToken, newToken)
-		check = col.update_one()
 		return render_template('index.html', err=err, reset=reset)
 
 def hash_password(password):
