@@ -134,7 +134,7 @@ def login():
 							session['user'] = username 
 							return redirect(url_for('home'))
 					else:
-						return render_template('index.html', error = 8)
+						return render_template('index.html', error = 10)
 			else:
 				return render_template('index.html', error = 2)
 		else:
