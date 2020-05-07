@@ -32,11 +32,11 @@
         <div class="row profile">
             <div class="col-md-3">
                 <div class="profile-sidebar">
+					{% if ImgArr[0] %}
                     <div class="profile-userpic">
-                        {% if pro_img %}
-                        <img src="../static/profile_pictures/{{pro_img}}" class="img-responsive" alt="">
-                        {% endif %}
-                    </div>
+						<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+					</div>
+					{% endif %}
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
                             {% if name and surname %}
@@ -139,30 +139,13 @@
 						{% endif %}
 						{% if postal_code %}
                         <h5>Postal Code</h5>
-                        <div class="info">
-                            {{postal_code}}
-                        </div>
                         {% endif %}
                         <br>
-                        <div class = "picture_container">
-                            {% if img1 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img1}}" alt=""></div>
-                            {% endif %}
-                        <div class = "picture_container">
-                            {% if img2 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img2}}" alt="">
-                            {% endif %}
-                        </div>
-                        <div class = "picture_container">
-                            {% if img3 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img3}}" alt="">
-                            {% endif %}
-                        </div>
-                        <div class = "picture_container">
-                            {% if img4 %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{img4}}" alt="">
-                            {% endif %}
-                        </div>
+						{% for image in ImgArr[1:]: %}
+							<div class = "picture_container">
+								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
+							</div>
+						{% endfor %}
                     </div>
                 </div>
             </div>

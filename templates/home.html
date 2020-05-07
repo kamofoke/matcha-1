@@ -19,7 +19,11 @@
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		{% if username == Admin %}
+		<li><a href="{{ url_for('adminblockedusers') }}">Admin</a></li>
+		{% endif %}
+		
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
     
@@ -29,10 +33,13 @@
             <h2>Search and Filter</h2>
 			Search By Age Range <input type = "number"  min="18" max="100" value="18" name="searchByAgeMin"/> : <input type = "number" value="100" name="searchByAgeMax"  min="18" max="100" />
             <br>
+            <br>
             Search By Location <input type = "text" value="Anywhere" name="searchByLocation" placeholder="Search By Location" />
             <br>
+            <br>
             Search By Popularity Range <input type = "number"  value="0" name="searchByPopularityMin"/> : <input type = "number" value="100" name="searchByPopularityMax" />
-			<br>	
+            <br>
+            <br>	
             <input type="checkbox" name="animals" value="yes" checked>
             <input type="hidden" name="animals" value="no">
 			<label for="animals">Animals</label>
@@ -49,6 +56,7 @@
             <input type="hidden" name="music" value="no">
 			<label for="music">Music</label>
             <br>
+            <br>
 			<button type="submit" value="submitFilter" class="btn btn-success">Submit</button>
 		</form>
         <div class="row profile">
@@ -57,10 +65,10 @@
 			{% else %}
             <div class="col-md-3">
                 <div class="profile-sidebar">
+					{% if ImgArr[0] %}
                     <div class="profile-userpic">
-                        {% if pro_img %}
-                        <img src="../static/profile_pictures/{{ pro_img }}" class="img-responsive" alt="">
-                        {% endif %}
+						<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+					{% endif %}
                     </div>
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
@@ -82,6 +90,7 @@
                 <div class = "profile_container">
                     <div class="profile-content">
                         <h3 style="align-content: center;">User Information</h3>
+                        <br>
 						{% if bio %}
 						<h5>Bio</h5>
 						<div class="info">
@@ -105,15 +114,14 @@
 						<div class="info">
 							{{suburb}}
 						</div>
-                        {% endif %}
-                        <br>
+						{% endif %}
                         <br>
                         <a href="{{ url_for('viewprofile', username = username) }}"><button class="btn btn-dark">View {{username}}'s full profile</button></a>
+                        {% endif %}
+                        <br>
                     </div>
-                    
                 </div>
 			</div>
-			{% endif %}
         </div>
     </div></center>
     <br>
