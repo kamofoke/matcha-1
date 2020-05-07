@@ -7,6 +7,7 @@ import hashlib, binascii, os, re
 from pymongo import MongoClient
 from datetime import date
 import pymongo, random, string
+import requests
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -113,6 +114,13 @@ def login():
 	password = request.form['password']
 	result = col.find_one({"username": username})
 	if request.method == 'POST':
+		res = requests.get('https://ipinfo.io')
+		location_data = res.json()
+		city = location_data['city']
+		country = location_data['country']
+		lat_long = location_data['loc'].split(',')
+		latitude = lat_long[0]
+		longitude = lat_long[1]
 		if result != None:
 			for cursor in col.find({"username": username}):
 				passwordhash = cursor['Password']
@@ -129,7 +137,7 @@ def login():
 					if verify == "1":
 						if pref == "0":
 							session['user'] = username
-							return render_template('preferences.html', username = username)
+							return render_template('preferences.html', username = username, city=city)
 						else:
 							session['user'] = username 
 							return redirect(url_for('home'))

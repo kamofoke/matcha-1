@@ -56,17 +56,7 @@ Postal Code: <br><input name="postal code" type="text">
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
 <br>Select images: <input type="file" name="img" multiple>
-<div class="location"></div>
-    <script>
-	$.ajax({
-		url: "https://geolocation-db.com/jsonp",
-		jsonpCallback: "callback",
-		dataType: "jsonp",
-		success: function( location ) {
-			$('.location').html(`<input type="hidden" name="location" value="${location.city}">`);
-		}
-	});		
-    </script>
+<input type="hidden" class="location" name="location" value="{{city}}">
 <br/><input type="submit" name = "pref" value = "Submit"/>
 </form><br/>
 </body>
