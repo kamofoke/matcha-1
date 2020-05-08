@@ -140,6 +140,7 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+	col.update_one({"username": session["user"]},{"$set": {'ConnectionStatus': date.now.strftime('%Y-%m-%d')} })
 	session.pop("user", None)
 	return render_template('index.html')
 		
@@ -150,6 +151,7 @@ def home():
 	except KeyError:
 		return render_template('index.html')
 	username = session['user']
+	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	if request.method == 'POST':
 		minAge = int(request.form['searchByAgeMin'])
