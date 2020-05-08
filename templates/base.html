@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Matcha</title>
-    <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/main.css')}}"></link>
-    {% block head %}{% endblock %}{% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Matcha</title>
+  <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/main.css')}}"></link>
+  {% block head %}{% endblock %}{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 </head>
 <body>
-    <header>
-        {% block header %}{% endblock %}
-    </header>
-    {% block body %}{% endblock %}    
+	<header>
+		{% block header %}{% endblock %}
+	</header>
+	{% block body %}{% endblock %}
 </body>
 </html>

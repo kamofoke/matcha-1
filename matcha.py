@@ -7,6 +7,7 @@ import hashlib, binascii, os, re
 from pymongo import MongoClient
 from datetime import date
 import pymongo, random, string
+import requests
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -15,9 +16,13 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 
-cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
-db = cluster["Matcha"]
-col = db["Users"]
+# cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
+# db = cluster["Matcha"]
+# col = db["Users"]
+
+cluster = MongoClient('localhost', 27017)
+db = cluster.matcha
+col = db.users
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -109,6 +114,13 @@ def login():
 	password = request.form['password']
 	result = col.find_one({"username": username})
 	if request.method == 'POST':
+		res = requests.get('https://ipinfo.io')
+		location_data = res.json()
+		city = location_data['city']
+		country = location_data['country']
+		lat_long = location_data['loc'].split(',')
+		latitude = lat_long[0]
+		longitude = lat_long[1]
 		if result != None:
 			for cursor in col.find({"username": username}):
 				passwordhash = cursor['Password']
@@ -125,12 +137,12 @@ def login():
 					if verify == "1":
 						if pref == "0":
 							session['user'] = username
-							return render_template('preferences.html', username = username)
+							return render_template('preferences.html', username = username, city=city)
 						else:
 							session['user'] = username 
 							return redirect(url_for('home'))
 					else:
-						return render_template('index.html', error = 8)
+						return render_template('index.html', error = 10)
 			else:
 				return render_template('index.html', error = 2)
 		else:
@@ -553,29 +565,103 @@ def verify(username):
 	try:
 		username = session['user']
 	except KeyError:
-		return render_template('index.html')	
-	myquery = { "username": username }
-	newvalues = { "$set": {"Verify": "1"} }
-	col.update_one(myquery, newvalues)
-	return render_template('index.html', verified=1)
-	
+		return render_template('index.html')
+	finally:
+		myquery = { "username": username }
+		newvalues = { "$set": {"Verify": "1"} }
+		col.update_one(myquery, newvalues)
+		return render_template('index.html', verified=1)
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+	if (request.method == 'GET'):
+		reset = 0
+		err = ''
+		return render_template('reset_password.html', err=err, reset=reset)
+	if (request.method == 'POST'):
+		reset = 0
+		err = ''
+		email = request.form['email']
+		if (len(email) > 0):
+			emailCheck = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
+			if (re.search(emailCheck, email)):
+				findExisting = { 'Email' : email }
+				result = col.find_one(findExisting)
+				if (result == None):
+					err = 3
+					return render_template('reset_password.html', err=err, reset=reset)
+				else:
+					err = 0
+					token = hash_password(email)
+					oldToken = { 'Email' : email }
+					newToken = { '$set': { 'Token' : token } }
+					res = col.update_one(oldToken, newToken)
+					msg = Message("Matcha Password Reset", sender="noreply@matcha.com", recipients=[email])
+					msg.body = "Hello!\n\nYou have requested a password reset. Please click the link below to verify your account and reset your password.\n\nhttp://127.0.0.1:5000/reset?email={0}&token={1}.\n\nThank you.\n".format(email, token)
+					mail.send(msg)
+					return render_template('reset_password.html', err=err, reset=reset)
+			elif not (re.search(emailCheck, email)):
+				err = 1
+				return render_template('reset_password.html', err=err, reset=reset)
+		else :
+			err = 2
+			return render_template('reset_password.html', err=err, reset=reset)
+
+@app.route('/reset', methods=['GET', 'POST'])
+def reset():
+	if (request.method == 'GET'):
+		err = ''
+		reset = 1
+		email = request.args.get('email')
+		token = request.args.get('token')
+		emailQuery = {'Email' : email}
+		tokenQuery = {'Token' : token}
+		validEmail = col.find_one(emailQuery)
+		validToken = col.find_one(tokenQuery)
+		if (validEmail == None or validToken == None):
+			err = 4
+			return render_template('reset_password.html', err=err, reset=reset)
+		else:
+			err = 5
+			return render_template('reset_password.html', err=err, reset=reset)
+	if (request.method == 'POST'):
+		err = ''
+		reset = 1
+		email = request.form['email']
+		password = request.form['newPassword']
+		confirmPassword = request.form['confirmNewPassword']
+		matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
+		if (matches):
+			if (password == confirmPassword):
+				err = 6
+				oldPassword = { 'Email' : email }
+				newPassword = { '$set': { 'Token' : '' , 'Password' : hash_password(password)} }
+				res = col.update_one(oldPassword, newPassword)
+				return redirect(url_for('index'))
+			else:
+				err = 7
+				return render_template('index.html', err=err, reset=reset)
+		else:
+			err = 8
+			return render_template('index.html', err=err, reset=reset)
+		return render_template('index.html', err=err, reset=reset)
+
 def hash_password(password):
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
-    pwdhash = binascii.hexlify(pwdhash)
-    return (salt + pwdhash).decode('ascii')
+	salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+	pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
+	pwdhash = binascii.hexlify(pwdhash)
+	return (salt + pwdhash).decode('ascii')
 
 def verify_password(stored_password, provided_password):
-    salt = stored_password[:64]
-    stored_password = stored_password[64:]
-    pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), str(salt).encode('ascii'), 100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == stored_password
+	salt = stored_password[:64]
+	stored_password = stored_password[64:]
+	pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode('utf-8'), str(salt).encode('ascii'), 100000)
+	pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+	return pwdhash == stored_password
 
 def randomString(stringLength=8):
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stringLength))
+	letters = string.ascii_lowercase
+	return ''.join(random.choice(letters) for i in range(stringLength))
 
 if (__name__ == "__main__"):
-    app.run(debug = True)
-
+	app.run(debug = True)
