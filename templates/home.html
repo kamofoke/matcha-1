@@ -11,7 +11,7 @@
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <title>Document</title>
+    <title>Home</title>
 </head>
 <body>
 	<ul class="topnav">
@@ -20,9 +20,6 @@
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
 		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-		{% if username == Admin %}
-		<li><a href="{{ url_for('adminblockedusers') }}">Admin</a></li>
-		{% endif %}
 		
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
