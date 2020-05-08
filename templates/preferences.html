@@ -12,10 +12,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="150" height="auto"></div>
 </head>
 ​
 <body>
+<<<<<<< HEAD
 ​
 <<<<<<< HEAD
 ​{% if completed == 1 %}
@@ -23,6 +25,14 @@
 {% endif %}
 =======
 >>>>>>> 8d2a2158054d432a2800ba879a58459ac3e3d292
+=======
+	{% if error == 1 %}
+		<h3>Please do not select more than 5 images</h3>
+	{% endif %}
+​{% if completed == 1 %}
+	<h3 style="color:brown; font-size: 1vw; font-family: Verdana, Geneva, Tahoma, sans-serif;">You successfully saved your preferences</h3>
+{% endif %}
+>>>>>>> 30a14c8388bd75a0371d67b739936b18a61adf67
 <h1>Tell us about yourself!</h1>
 <form action=" {{ url_for('preferences_handler') }}" method = "POST" enctype="multipart/form-data">
 Name: <input name="name" type="text" required> Surname: <input name="surname" type="text" required>
@@ -30,7 +40,6 @@ Name: <input name="name" type="text" required> Surname: <input name="surname" ty
 <input type="radio" name="gender" value="male" checked="checked">Male
 <input type="radio" name="gender" value="female">Female
 <input type="radio" name="gender" value="other">Other<br>
-<br>Surburb: <br><input name="suburb" type="text"><br><br>
 Postal Code: <br><input name="postal code" type="text">
 <p>Sexual Preference:</p>
 <input type="radio" name="sexual" value="homosexual">Homosexual
@@ -56,6 +65,17 @@ Postal Code: <br><input name="postal code" type="text">
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
 <br>Select images: <input type="file" name="img" multiple>
+<div class="location"></div>
+    <script>
+	$.ajax({
+		url: "https://geolocation-db.com/jsonp",
+		jsonpCallback: "callback",
+		dataType: "jsonp",
+		success: function( location ) {
+			$('.location').html(`<input type="hidden" name="location" value="${location.city}">`);
+		}
+	});		
+    </script>
 <br/><input type="submit" name = "pref" value = "Submit"/>
 </form><br/>
 </body>
