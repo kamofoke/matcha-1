@@ -7,7 +7,7 @@ import hashlib, binascii, os, re
 from pymongo import MongoClient
 from datetime import date
 import pymongo, random, string
-import requests
+from pip._vendor import requests
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -16,13 +16,9 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 
-# cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
-# db = cluster["Matcha"]
-# col = db["Users"]
-
-cluster = MongoClient('localhost', 27017)
-db = cluster.matcha
-col = db.users
+cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
+db = cluster["Matcha"]
+col = db["Users"]
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -85,7 +81,7 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
 								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
 								msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://localhost:5000/verify/{0}.\n\nThank you.\n".format(username)
@@ -113,36 +109,28 @@ def login():
 	username = request.form['username']
 	password = request.form['password']
 	result = col.find_one({"username": username})
-	if request.method == 'POST':
-		res = requests.get('https://ipinfo.io')
-		location_data = res.json()
-		city = location_data['city']
-		country = location_data['country']
-		lat_long = location_data['loc'].split(',')
-		latitude = lat_long[0]
-		longitude = lat_long[1]
-		if result != None:
-			for cursor in col.find({"username": username}):
-				passwordhash = cursor['Password']
-				if username == 'Admin':
-					if verify_password(passwordhash, password):
+	if result != None:
+		for cursor in col.find({"username": username}):
+			passwordhash = cursor['Password']
+			if username == 'Admin':
+				if verify_password(passwordhash, password):
+					session['user'] = username
+					return redirect(url_for('viewblockedusers'))
+				else:
+					return render_template('index.html', error = 2)
+			pref = cursor['Pref']
+			verify = cursor['Verify']
+		if verify_password(passwordhash, password):
+			if result != None:
+				if verify == "1":
+					if pref == "0":
 						session['user'] = username
-						return redirect(url_for('viewblockedusers'))
+						return render_template('preferences.html', username = username)
 					else:
-						return render_template('index.html', error = 2)
-				pref = cursor['Pref']
-				verify = cursor['Verify']
-			if verify_password(passwordhash, password):
-				if result != None:
-					if verify == "1":
-						if pref == "0":
-							session['user'] = username
-							return render_template('preferences.html', username = username, city=city)
-						else:
-							session['user'] = username 
-							return redirect(url_for('home'))
-					else:
-						return render_template('index.html', error = 10)
+						session['user'] = username 
+						return redirect(url_for('home'))
+				else:
+					return render_template('index.html', error = 10)
 			else:
 				return render_template('index.html', error = 2)
 		else:
@@ -428,7 +416,6 @@ def preferences_handler():
 	name = request.form['name']
 	surname = request.form['surname']
 	gender = request.form['gender']
-	suburb = request.form['location']
 	postal_code = request.form['postal code']
 	sexual = request.form['sexual']
 	bio = request.form['bio']
@@ -439,6 +426,9 @@ def preferences_handler():
 	food = request.form['food']
 	uploaded_images = request.files.getlist('img')
 	index = 0
+	res = requests.get('https://ipinfo.io')
+	location_data = res.json()
+	suburb = location_data['city']
 	for file in uploaded_images:
 		index += 1
 		if (index == 1):
