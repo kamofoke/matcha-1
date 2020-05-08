@@ -11,25 +11,26 @@
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <title>Your Matches</title>
+    <title>Matcha</title>
 </head>
 <body>
-	<ul class="topnav">
+	<!-- <ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
         <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
-    </ul>
+    </ul> -->
 
     <center><div class="container">
-        {% if not matches[0] %}
-            <h1>You have no matches</h1>
+		{% if blockedUsersArr %}
+            <h1>
+				{% for user in blockedUsersArr %}
+				<p>{{ user }}</p>
+				{%endfor%}
+			</h1>
         {% else %}
-        <h1>Your Matches</h1>
+        <h1>No blocked users</h1>
         {% endif %}
-        {% for match in matches %}
-        <a href="{{ url_for('viewprofile', username = match) }}"><p>{{match}}</p></a>
-        {%endfor%}
     </div></center>
