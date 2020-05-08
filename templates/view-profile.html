@@ -32,11 +32,11 @@
         <div class="row profile">
             <div class="col-md-3">
                 <div class="profile-sidebar">
-                    <div class="profile-userpic">
-                        {% if ImgArr[0] %}
-                            <img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png' }}" alt="">
-                        {% endif %}
-                    </div>
+						{% if ImgArr[0] %}
+						<div class="profile-userpic">
+							<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+						</div>
+						{% endif %}
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
                             {% if name and surname %}
@@ -141,7 +141,14 @@
 								<img class = "img-responsive" src="../static/profile_pictures/{{ image + '.png' }}" alt="">
 							</div>
 						{% endfor %}
+                        </div>
                     </div>
+                    <br>
+                    {% if blocked == 0 %}
+                    <a href = "{{ url_for('block', blockedUser = username) }}"><button class="btn btn-danger">Block User</button></a>
+                    {% else %}
+                    <a href = "{{ url_for('unblock', blockedUser = username) }}"><button class="btn btn-danger">Unblock User</button></a>
+                    {% endif %}
                 </div>
             </div>
         </div>

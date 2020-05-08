@@ -21,31 +21,36 @@ col = db["Users"]
 #col_likes= db["Likes"]
 col_notis= db["Notifications"]
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_username'] = 'matcha13.noreply@gmail.com'
-app.config['MAIL_PASSWORD'] = 'matcha1313'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+    "MAIL_PASSWORD": 'matcha1313'
+}
+app.config.update(mail_settings)
 mail = Mail(app)
 
 @app.route('/populatedb')
 def populateDB():
 	col.delete_many( { } )
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tanya", "Surname": "Loft", "Age": 22, "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": hash_password("Password123!"), 
-	"Gender": "female", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "female", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Jeremiah", "Surname": "Dun", "Age": 22, "Email": "jerry@gmail.com", "username": "jerry", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tyler", "Surname": "Coughed", "Age": 22, "Email": "tc@gmail.com", "username": "tc", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Harry", "Surname": "Hairstyles", "Age": 22, "Email": "hs@gmail.com", "username": "hs", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
 	col.insert_one(query)
 	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": 22, "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
+	col.insert_one(query)
+	query = {"username": "Admin", "Password": hash_password("Admin123!"), "Blocked": ""}
 	col.insert_one(query)
 	return index()
 
@@ -77,11 +82,11 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "LastSeen": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
-								# msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
-								# msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://127.0.0.1:5000/verify/{0}.\n\nThank you.\n".format(username)
-								# mail.send(msg)
+								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
+								msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://localhost:5000/verify/{0}.\n\nThank you.\n".format(username)
+								mail.send(msg)
 							else:
 								return render_template('index.html', error = 1)
 						else:
@@ -108,9 +113,15 @@ def login():
 	if request.method == 'POST':
 		if result != None:
 			for cursor in col.find({"username": username}):
+				passwordhash = cursor['Password']
+				if username == 'Admin':
+					if verify_password(passwordhash, password):
+						session['user'] = username
+						return redirect(url_for('viewblockedusers'))
+					else:
+						return render_template('index.html', error = 2)
 				pref = cursor['Pref']
 				verify = cursor['Verify']
-				passwordhash = cursor['Password']
 			if verify_password(passwordhash, password):
 				if result != None:
 					if verify == "1":
@@ -131,15 +142,11 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-	# if request.method == "GET":
-	# 	return render_template('home.html')
 	session.pop("user", None)
 	return render_template('index.html')
 		
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-	# if request.method == "GET":
-	# 	return render_template('home.html')
 	try:
 		username = session['user']
 	except KeyError:
@@ -178,10 +185,11 @@ def home():
 		Sexual_Orientation = cursor['Sexual Orientation']
 		Likes = cursor['Likes']
 		Dislikes = cursor['Dislikes']
+		Blocked = cursor['Blocked']
 		Suburb = cursor['Suburb']
-
 	likesArr = Likes.split(", ")
 	dislikesArr = Dislikes.split(", ")
+	blockedArr = Blocked.split(", ")
 	query = {"$and" : [
 		{ "username" : {"$ne" : username}},
 		{ "$or" : [ { "Sports" : Sports }, { "Food" : Food }, { "Music" : Music }, { "Movies" : Movies }, { "Animals" : Animals } ] }
@@ -229,7 +237,8 @@ def home():
 	compatibleUsersArr = []
 	if (compatibleUsers):
 		for compatibleUser in compatibleUsers:
-			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and 
+			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
+			compatibleUser['username'] not in blockedArr and 
 			compatibleUser['Age'] >= minAge and compatibleUser['Age'] <= maxAge and
 			compatibleUser['Popularity'] >= minPopularity and compatibleUser['Popularity'] <= maxPopularity and
 			compatibleUser['Food'] == tagFood and compatibleUser['Music'] == tagMusic and
@@ -252,29 +261,16 @@ def home():
 			Suburb1 = compatibleUsersArr[0]['Suburb']
 			Gender1 = compatibleUsersArr[0]['Gender']
 			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
-			Image_Name_Arr = compatibleUsersArr[0]['Images'].split(', ')
+			Image_Name_Arr = (compatibleUsersArr[0]['Images']).split(', ')
 			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
 	return render_template('home.html', nomatches=1, user=session['user'])
 
-def hash_password(password):
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
-                                salt, 100000)
-    pwdhash = binascii.hexlify(pwdhash)
-    return (salt + pwdhash).decode('ascii')
-
-def verify_password(stored_password, provided_password):
-    salt = stored_password[:64]
-    stored_password = stored_password[64:]
-    pwdhash = hashlib.pbkdf2_hmac('sha512', 
-                                  provided_password.encode('utf-8'), 
-                                  str(salt).encode('ascii'), 
-                                  100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == stored_password
-
 @app.route('/like<string:likedUser>')
 def like(likedUser):
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
 	compatibleUserPopularity = (compatibleUser['Popularity'] + 1) 
@@ -302,19 +298,20 @@ def like(likedUser):
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
-<<<<<<< HEAD
 		print("else\n")
 		print(userLikes)
 		print(likedUser)
-=======
 	query = { "$set": { 'Popularity': compatibleUserPopularity, 'ProfileLikes': userProfileLikes }}
 	col.update_one({ "username": likedUser }, query)
->>>>>>> 1058dc3a425e5d8f2a5d60b19365519baf49ff1e
 	return redirect(url_for('home'))
 	
 
 @app.route('/dislike<string:dislikedUser>')
 def dislike(dislikedUser):
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
@@ -328,8 +325,58 @@ def dislike(dislikedUser):
 	col.update_one({ "username": dislikedUser }, query)
 	return redirect(url_for('home'))
 
+@app.route('/block<string:blockedUser>')
+def block(blockedUser):
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	query = ({"username": session['user']})
+	user = col.find_one(query)
+	userBlocked = user['Blocked']
+	userBlocked = blockedUser if userBlocked == '' else userBlocked + ', ' + blockedUser
+	query = { "$set": {'Blocked': userBlocked }}
+	col.update_one({ "username": session['user'] }, query)
+	col.update_one({ "username": "Admin" }, query )
+	return redirect(url_for('home'))
+
+@app.route('/unblock<string:blockedUser>')
+def unblock(blockedUser):
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')	
+	query = ({"username": session['user']})
+	user = col.find_one(query)
+	userBlocked = user['Blocked']
+	userBlockedArr = userBlocked.split(", ")
+	userBlockedArr = userBlockedArr.remove(blockedUser)
+	userBlocked = "" if userBlockedArr == None else ", ".join(userBlockedArr)
+	query = { "$set": {'Blocked': userBlocked }}
+	col.update_one({ "username": session['user'] }, query)
+	col.update_one({ "username": "Admin" }, query )
+	return redirect(url_for('home'))
+
+@app.route('/viewblockedusers')
+def viewblockedusers():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	if (username != "Admin"):
+		return 'You do not have permission to view this page'
+	query = ({"username": username})
+	user = col.find_one(query)
+	blockedUsers = user['Blocked']
+	blockedUsersArr = blockedUsers.split(', ')
+	return render_template('blocked-users.html', blockedUsersArr=blockedUsersArr)
+
 @app.route('/matches')
 def matches():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	matches = user['Matches']
@@ -338,6 +385,10 @@ def matches():
 
 @app.route('/notis')
 def thing():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	usr = session['user']
 	q1 = { "username": usr }
 	n = "0"
@@ -361,10 +412,12 @@ def thing():
 	col.update_one(q1, nv)
 	return redirect(url_for('profile'))
 
-
 @app.route('/preferences', methods=['POST'])
 def preferences_handler():
-	username = session['user']
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	name = request.form['name']
 	surname = request.form['surname']
 	gender = request.form['gender']
@@ -377,7 +430,7 @@ def preferences_handler():
 	movies = request.form['movies']
 	sports = request.form['sports']
 	food = request.form['food']
-	uploaded_images = request.files.getlist('img[]')
+	uploaded_images = request.files.getlist('img')
 	index = 0
 	for file in uploaded_images:
 		index += 1
@@ -398,11 +451,18 @@ def preferences_handler():
 
 @app.route('/editprofile')
 def editprofile():
-	return render_template('preferences.html', username = session['user'])
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	return render_template('preferences.html', username = username)
 
 @app.route('/profile')
 def profile():
-	username = session['user']
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -423,6 +483,10 @@ def profile():
 
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')	
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -440,24 +504,50 @@ def viewprofile(username):
 		Noti = cursor['Noti']
 		userProfileViews = cursor['ProfileViews']
 		Image_Name_Arr = cursor['Images'].split(', ')
+	query = { "username": session['user'] }
+	user = col.find_one(query)
+	blockedUsers = user['Blocked']
+	blockedUsers = blockedUsers.split(', ')
+	if (username in blockedUsers):
+		blocked = 1
+	else:
+		blocked = 0
 	userProfileViewsArr = userProfileViews.split(', ')
 	if (session['user'] not in userProfileViewsArr):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti)
+	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr)
 
 @app.route('/profileviews/')
 def profileviews():
-	query = ({"username": session['user']})
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	query = ({"username": username})
 	user = col.find_one(query)
+	profileViews = user['ProfileViews']
+	profileViews = profileViews.split(', ')
+	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
+
+@app.route('/blockedusers')
+def adminblockedusers():
+	if (session['user']) != "Admin":
+		return render_template("index.html")
+	query = ({"Blocked"})
+	user = col.find(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
 	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
 
 @app.route('/profilelikes/')
 def profilelikes():
-	query = ({"username": session['user']})
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	query = ({"username": username})
 	user = col.find_one(query)
 	profileLikes = user['ProfileLikes']
 	profileLikes = profileLikes.split(', ')
@@ -465,14 +555,14 @@ def profilelikes():
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
-	if request.method == 'GET':
-		return "GET %s" %username
-	elif request.method == 'POST':
-		return "POST %s" %username
-	# myquery = { "username": username }
-	# newvalues = { "$set": {"Verify": "1"} }
-	# col.update_one(myquery, newvalues)
-	# return render_template('index.html', verified=1)
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')	
+	myquery = { "username": username }
+	newvalues = { "$set": {"Verify": "1"} }
+	col.update_one(myquery, newvalues)
+	return render_template('index.html', verified=1)
 	
 def hash_password(password):
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
@@ -493,6 +583,3 @@ def randomString(stringLength=8):
 
 if (__name__ == "__main__"):
     app.run(debug = True)
-
-#npm install -g @vue/cli
-#vue init webpack Frontend
