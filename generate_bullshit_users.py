@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from faker import Faker
 import hashlib, os, binascii
 import random
+from datetime import date
 
 fake = Faker()
 
@@ -105,80 +106,80 @@ def createUsers():
 		email = name + username + '@' + randServ[random.randint(0, 3)] + randThing[random.randint(0, 4)]
 		locationArr = [
 			'Albertville, Gauteng',
-			'Albertskroon',
-			'Aldara Park',
+			'Albertskroon, Gauteng',
+			'Aldara Park, Gauteng',
 			'Amalgam, Gauteng',
-			'Auckland Park',
-			'Berario',
-			'Beverley Gardens',
+			'Auckland Park, Gauteng',
+			'Berario, Gauteng',
+			'Beverley Gardens, Gauteng',
 			'Blackheath, Gauteng',
 			'Blairgowrie, Gauteng',
 			'Bordeaux, Gauteng',
-			'Bosmont',
+			'Bosmont, Gauteng',
 			'Brixton, Gauteng',
-			'Bryanbrink',
+			'Bryanbrink, Gauteng',
 			'Bryanston West, Gauteng',
-			'Clynton',
+			'Clynton, Gauteng',
 			'Coronationville, Gauteng',
-			'Country Life Park',
+			'Country Life Park, Gauteng',
 			'Cowdray Park, Gauteng',
-			'Craighall',
-			'Craighall Park',
-			'Cramerview',
+			'Craighall, Gauteng',
+			'Craighall Park, Gauteng',
+			'Cramerview, Gauteng',
 			'Cresta, Gauteng',
 			'Crown, Gauteng',
-			'Daniel Brink Park',
-			'Darrenwood',
-			'Dunkeld West',
+			'Daniel Brink Park, Gauteng',
+			'Darrenwood, Gauteng',
+			'Dunkeld West, Gauteng',
 			'Dunkeld, Gauteng',
-			'Emmarentia',
+			'Emmarentia, Gauteng',
 			'Ferndale, Gauteng',
-			'Florida Glen',
+			'Florida Glen, Gauteng',
 			'Fontainebleau, Gauteng',
 			'Forest Town, Gauteng',
-			'Glenadrienne',
-			'Gleniffer',
+			'Glenadrienne, Gauteng',
+			'Gleniffer, Gauteng',
 			'Greenside, Gauteng',
-			'Greymont',
-			'Hurlingham Gardens',
+			'Greymont, Gauteng',
+			'Hurlingham Gardens, Gauteng',
 			'Hurlingham, Gauteng',
 			'Hyde Park, Gauteng',
 			'Jan Hofmeyer, Gauteng',
-			'Kensington B',
+			'Kensington B, Gauteng',
 			'Linden, Gauteng',
-			'Lindfield House',
+			'Lindfield House, Gauteng',
 			'Lyme Park, Gauteng',
-			'Malanshof',
+			'Malanshof, Gauteng',
 			'Melville, Gauteng',
 			'Mill Hill, Gauteng',
-			'Newlands, Johannesburg',
-			'Northcliff',
-			'Oerder Park',
-			'Osummit',
+			'Newlands, Johannesburg, Gauteng',
+			'Northcliff, Gauteng',
+			'Oerder Park, Gauteng',
+			'Osummit, Gauteng',
 			'Parkhurst, Gauteng',
-			'Parkmore',
-			'Parktown North',
+			'Parkmore, Gauteng',
+			'Parktown North, Gauteng',
 			'Parkview, Gauteng',
-			'Praegville',
-			'President Ridge',
-			'Randburg',
-			'Randpark',
-			'Randpark Ridge',
+			'Praegville, Gauteng',
+			'President Ridge, Gauteng',
+			'Randburg, Gauteng',
+			'Randpark, Gauteng',
+			'Randpark Ridge, Gauteng',
 			'Riverbend, Gauteng',
 			'Rosebank, Gauteng',
-			'Ruiterhof',
+			'Ruiterhof, Gauteng',
 			'Sandhurst, Gauteng',
-			'Solridge',
-			'Sophiatown',
-			'Strijdompark',
-			'Total South Africa',
-			'Vandia Grove',
+			'Solridge, Gauteng',
+			'Sophiatown, Gauteng',
+			'Strijdompark, Gauteng',
+			'Total South Africa, Gauteng',
+			'Vandia Grove, Gauteng',
 			'Vrededorp, Gauteng',
-			'Waterval Estate, Randburg',
+			'Waterval Estate, Randburg, Gauteng',
 			'Westbury, Gauteng',
 			'Westcliff, Gauteng',
 			'Westdene, Gauteng',
-			'Willowild'
+			'Willowild, Gauteng'
 			]
 		location = locationArr[random.randint(0, 74)]
 		animals = 0
@@ -204,14 +205,15 @@ def createUsers():
 		moviesQuery = 'yes' if movies == 1 else 'no'
 		musicQuery = 'yes' if music == 1 else 'no'
 		sportsQuery = 'yes' if sports == 1 else 'no'
+		lastSeen = str(date.today())
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
 				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
 				'Bio': 'I am ' + name , 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Movies': moviesQuery, 'Noti': '1', 
-				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5', 'Token' : ''}
-		col.insert_one(query)
+				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5', 'Token' : '', 'ConnectionStatus' : lastSeen}
+		# col.insert_one(query)
 		print(query)
 		i += 1
 	query = {"username": "Admin", "Password": hash_password("Admin123!"), "Blocked": ""}
-	col.insert_one(query)
+	# col.insert_one(query)
 
 createUsers()
