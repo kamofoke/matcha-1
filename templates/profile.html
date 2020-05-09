@@ -113,6 +113,12 @@
                 <div class = "profile_container">
                     <div class="profile-content">
                         <h3 style="align-content: center;">User Information</h3>
+						{% if age %}
+						<h5>Age</h5>
+						<div class="info">
+							{{age}}
+						</div>
+						{% endif %}
 						{% if bio %}
 						<h5>Bio</h5>
 						<div class="info">
