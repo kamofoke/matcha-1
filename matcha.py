@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect , session, g
+from flask import Flask, render_template, url_for, request, redirect , session
 from email_validator import validate_email, EmailNotValidError
 from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
@@ -30,19 +30,8 @@ mail_settings = {
 }
 app.config.update(mail_settings)
 mail = Mail(app)
-
-# def hasFilters():
-# 	if not 'hasFilters' in g:
-# 		g.hasFilters = False
-# 	return g.hasFilters
-
 @app.route('/')
 def index():
-	# def get_db():
-    # if 'db' not in g:
-    #     g.db = connect_to_database()
-
-    # return g.db
 	return render_template('index.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -124,9 +113,9 @@ def login():
 			else:
 				return render_template('index.html', error = 2)
 		else:
-			return render_template('index.html', error = 3)
+			return render_template('index.html', error = 2)
 	else:
-		return render_template('index.html')
+		return render_template('index.html', error = 3)
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -249,8 +238,6 @@ def home():
 			{"Sexual Orientation" : "bisexual"}
 		]
 		})
-	print(thing.sortBy)
-	print(thing.sortByValue)
 	compatibleUsers = col.find(query).sort(thing.sortBy, thing.sortByValue)
 	compatibleUsersArr = []
 	commonTagsArr = []
@@ -562,16 +549,6 @@ def profileviews():
 		return render_template('index.html')
 	query = ({"username": username})
 	user = col.find_one(query)
-	profileViews = user['ProfileViews']
-	profileViews = profileViews.split(', ')
-	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
-
-@app.route('/blockedusers')
-def adminblockedusers():
-	if (session['user']) != "Admin":
-		return render_template("index.html")
-	query = ({"Blocked"})
-	user = col.find(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
 	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
