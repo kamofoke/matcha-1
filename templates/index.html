@@ -5,7 +5,8 @@
         <meta charset="utf-8">
         <meta name=viewport content="width=device-width, initial-scale=1">
         <title>Matcha</title>
-        <link href = "{{ url_for('static', filename = 'css/style.css')}}" rel = "stylesheet">
+		<link href = "{{ url_for('static', filename = 'css/style.css')}}" rel = "stylesheet">
+		<link rel="shortcut icon" href="#" />
     </head>
     <body>
     <div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="15" height="auto"></div>
@@ -62,7 +63,7 @@
 					{% if error == 2 %}
 						Username / Password combination incorrect
 					{% elif error == 3 %}
-						Username / Password combination incorrect
+						User does not exist. Please sign up
 					{% endif %}
 					<input type = "text" name = "username" placeholder = "Username"/>
 					<input type = "password" name = "password" placeholder = "Password"/>

@@ -30,29 +30,6 @@ mail_settings = {
 }
 app.config.update(mail_settings)
 mail = Mail(app)
-
-@app.route('/populatedb')
-def populateDB():
-	col.delete_many( { } )
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tanya", "Surname": "Loft", "Age": 22, "Email": "tanya@gmail.com", "username": "tanyaloft", "Password": hash_password("Password123!"), 
-	"Gender": "female", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "Online", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "heterosexual", "Bio": "I am Tanya", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
-	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Jeremiah", "Surname": "Dun", "Age": 22, "Email": "jerry@gmail.com", "username": "jerry", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "Online", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
-	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Tyler", "Surname": "Coughed", "Age": 22, "Email": "tc@gmail.com", "username": "tc", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "1998-12-23", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
-	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Harry", "Surname": "Hairstyles", "Age": 22, "Email": "hs@gmail.com", "username": "hs", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "2020-09-28", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
-	col.insert_one(query)
-	query = {"Pref": "1", "Verify": "1", "Matches": "", "Likes": "", "Dislikes": "", "Name": "Shawn", "Surname": "Mendosa", "Age": 22, "Email": "sm@gmail.com", "username": "sm", "Password": hash_password("Password123!"), 
-	"Gender": "male", "Images": "trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5",  "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "2020-05-08", "Suburb": "Suburb", "Postal Code": "1989", "Sexual Orientation": "bisexual", "Bio": "I am jerry", "Animals": "yes", "Music": "yes", "Sports": "yes", "Food": "yes", "Noti": "1", "Movies": "yes"}
-	col.insert_one(query)
-	query = {"username": "Admin", "Password": hash_password("Admin123!"), "Blocked": ""}
-	col.insert_one(query)
-	return index()
-
 @app.route('/')
 def index():
 	return render_template('index.html')
@@ -123,6 +100,8 @@ def login():
 		if verify_password(passwordhash, password):
 			if result != None:
 				if verify == "1":
+					global thing
+					thing.hasFilters = False
 					if pref == "0":
 						session['user'] = username
 						return render_template('preferences.html', username = username)
@@ -134,9 +113,9 @@ def login():
 			else:
 				return render_template('index.html', error = 2)
 		else:
-			return render_template('index.html', error = 3)
+			return render_template('index.html', error = 2)
 	else:
-		return render_template('index.html')
+		return render_template('index.html', error = 3)
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -154,43 +133,68 @@ def home():
 	username = session['user']
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
-	if request.method == 'POST':
-		minAge = int(request.form['searchByAgeMin'])
-		maxAge = int(request.form['searchByAgeMax'])
-		minPopularity = int(request.form['searchByPopularityMin'])
-		maxPopularity = int(request.form['searchByPopularityMax'])
-		tagAnimals = request.form['animals']
-		tagFood = request.form['food']
-		tagSports = request.form['sports']
-		tagMovies = request.form['movies']
-		tagMusic = request.form['music']
-		suburb = request.form['searchByLocation']
-	else:
-		minAge = 18
-		maxAge = 100
-		minPopularity = -2147483648
-		maxPopularity = 2147483647
-		tagAnimals = "yes"
-		tagFood = "yes"
-		tagSports = "yes"
-		tagMovies = "yes"
-		tagMusic = "yes"
-		suburb = "Anywhere"
-	for cursor in col.find(query):
-		Food = cursor['Food']
-		Music = cursor['Music']
-		Movies = cursor['Movies']
-		Animals = cursor['Animals']
-		Sports = cursor['Sports']
-		Gender = cursor['Gender']
-		Sexual_Orientation = cursor['Sexual Orientation']
-		Likes = cursor['Likes']
-		Dislikes = cursor['Dislikes']
-		Blocked = cursor['Blocked']
-		Suburb = cursor['Suburb']
+	user = col.find_one(query)
+	if (user):
+		Food = user['Food']
+		Music = user['Music']
+		Movies = user['Movies']
+		Animals = user['Animals']
+		Sports = user['Sports']
+		Gender = user['Gender']
+		Sexual_Orientation = user['Sexual Orientation']
+		Likes = user['Likes']
+		Dislikes = user['Dislikes']
+		Blocked = user['Blocked']
+		Suburb = user['Suburb']
 	likesArr = Likes.split(", ")
 	dislikesArr = Dislikes.split(", ")
 	blockedArr = Blocked.split(", ")
+	if request.method == 'POST':
+		typeof = request.form['typeOf']
+		if typeof == 'search':
+			thing.hasFilters = True
+			thing.minAge = int(request.form['searchByAgeMin'])
+			thing.maxAge = int(request.form['searchByAgeMax'])
+			thing.minPopularity = int(request.form['searchByPopularityMin'])
+			thing.maxPopularity = int(request.form['searchByPopularityMax'])
+			thing.tagAnimals = request.form['animals']
+			thing.tagFood = request.form['food']
+			thing.tagSports = request.form['sports']
+			thing.tagMovies = request.form['movies']
+			thing.tagMusic = request.form['music']
+			thing.tagAnimalsCheck = 'checked' if request.form['animals'] == 'yes' else 'no'
+			thing.tagFoodCheck = 'checked' if request.form['food'] == 'yes' else 'no'
+			thing.tagSportsCheck = 'checked' if request.form['sports'] == 'yes' else 'no'
+			thing.tagMoviesCheck = 'checked' if request.form['movies'] == 'yes' else 'no'
+			thing.tagMusicCheck = 'checked' if request.form['music'] == 'yes' else 'no'
+			thing.suburb = Suburb if request.form['searchByLocation'] == '' else request.form['searchByLocation']
+		elif typeof == 'sort':
+			thing.hasSort = True
+			sortby = request.form['sort']
+			thing.sortByValue = int(sortby[0] + sortby[1])
+			sortby = sortby[2:]
+			thing.sortBy = sortby if sortby else None
+	else:
+		thing.hasFilters = False
+		thing.hasSort = False
+		thing.minAge = 18
+		thing.maxAge = 100
+		thing.minPopularity = -2147483648
+		thing.maxPopularity = 2147483647
+		thing.tagAnimalsCheck = 'unchecked'
+		thing.tagFoodCheck = 'unchecked'
+		thing.tagSportsCheck = 'unchecked'
+		thing.tagMoviesCheck = 'unchecked'
+		thing.tagMusicCheck = 'unchecked'
+		thing.tagAnimals = "no"
+		thing.tagFood = "no"
+		thing.tagSports = "no"
+		thing.tagMovies = "no"
+		thing.tagMusic = "no"
+		thing.suburb = Suburb
+		thing.sortBy = 'Popularity'
+		thing.sortByValue = -1
+
 	query = {"$and" : [
 		{ "username" : {"$ne" : username}},
 		{ "$or" : [ { "Sports" : Sports }, { "Food" : Food }, { "Music" : Music }, { "Movies" : Movies }, { "Animals" : Animals } ] }
@@ -234,37 +238,53 @@ def home():
 			{"Sexual Orientation" : "bisexual"}
 		]
 		})
-	compatibleUsers = col.find(query)
+	compatibleUsers = col.find(query).sort(thing.sortBy, thing.sortByValue)
 	compatibleUsersArr = []
+	commonTagsArr = []
+	commonTags = 0
+	tagsArr = ['Movies', 'Food', 'Music', 'Animals', 'Sports']
 	if (compatibleUsers):
 		for compatibleUser in compatibleUsers:
-			if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
-			compatibleUser['username'] not in blockedArr and 
-			int(compatibleUser['Age']) >= minAge and int(compatibleUser['Age']) <= maxAge and
-			int(compatibleUser['Popularity']) >= minPopularity and int(compatibleUser['Popularity']) <= maxPopularity and
-			compatibleUser['Food'] == tagFood and compatibleUser['Music'] == tagMusic and
-			compatibleUser['Movies'] == tagMovies and compatibleUser['Animals'] == tagAnimals and
-			compatibleUser['Sports'] == tagSports):
-				if (suburb.upper() == "ANYWHERE"):
+			if (thing.hasFilters == False):
+				if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
+				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'] == thing.suburb):
 					compatibleUsersArr.append(compatibleUser)
-				elif (compatibleUser['Suburb'].upper() == suburb.upper()):
+					for tag in tagsArr:
+						if (user[tag] == compatibleUser[tag]):
+							commonTags += 1
+					commonTagsArr.append(commonTags)
+					commonTags = 0
+					if (thing.hasSort == False):
+						index = commonTagsArr.index(max(commonTagsArr))
+					else:
+						index = 0
+			elif (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
+				compatibleUser['username'] not in blockedArr and 
+				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
+				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
+				compatibleUser['Food'] == thing.tagFood and compatibleUser['Music'] == thing.tagMusic and
+				compatibleUser['Movies'] == thing.tagMovies and compatibleUser['Animals'] == thing.tagAnimals and
+				compatibleUser['Sports'] == thing.tagSports and compatibleUser['username'] == thing.suburb):
 					compatibleUsersArr.append(compatibleUser)
+					index = 0
 		if (compatibleUsersArr):
-			Username1 = compatibleUsersArr[0]['username']
-			Name1 = compatibleUsersArr[0]['Name']
-			Surname1 = compatibleUsersArr[0]['Surname']
-			Food1 = compatibleUsersArr[0]['Food']
-			Music1 = compatibleUsersArr[0]['Music']
-			Movies1 = compatibleUsersArr[0]['Movies']
-			Animals1 = compatibleUsersArr[0]['Animals']
-			Sports1 = compatibleUsersArr[0]['Sports']
-			Bio1 = compatibleUsersArr[0]['Bio']
-			Suburb1 = compatibleUsersArr[0]['Suburb']
-			Gender1 = compatibleUsersArr[0]['Gender']
-			Sexual_Orientation1 = compatibleUsersArr[0]['Sexual Orientation']
-			Image_Name_Arr = (compatibleUsersArr[0]['Images']).split(', ')
-			return render_template('home.html', user=session['user'], username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
-	return render_template('home.html', nomatches=1, user=session['user'])
+			print(compatibleUsersArr)
+			Username1 = compatibleUsersArr[index]['username']
+			Name1 = compatibleUsersArr[index]['Name']
+			Surname1 = compatibleUsersArr[index]['Surname']
+			Food1 = compatibleUsersArr[index]['Food']
+			Music1 = compatibleUsersArr[index]['Music']
+			Movies1 = compatibleUsersArr[index]['Movies']
+			Animals1 = compatibleUsersArr[index]['Animals']
+			Sports1 = compatibleUsersArr[index]['Sports']
+			Bio1 = compatibleUsersArr[index]['Bio']
+			Suburb1 = compatibleUsersArr[index]['Suburb']
+			Gender1 = compatibleUsersArr[index]['Gender']
+			Sexual_Orientation1 = compatibleUsersArr[index]['Sexual Orientation']
+			Image_Name_Arr = (compatibleUsersArr[index]['Images']).split(', ')
+			Age = compatibleUsersArr[index]['Age']
+			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
+	return render_template('home.html', thing=thing, nomatches=1, user=session['user'])
 
 @app.route('/like<string:likedUser>')
 def like(likedUser):
@@ -477,7 +497,8 @@ def profile():
 		Noti = cursor['Noti']
 		Image_Name_Arr = cursor['Images'].split(', ')
 		Popularity = cursor['Popularity']
-	return render_template('profile.html', user=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity)
+		Age = cursor['Age']
+	return render_template('profile.html', user=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity)
 
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
@@ -504,6 +525,7 @@ def viewprofile(username):
 		Image_Name_Arr = cursor['Images'].split(', ')
 		ConnectionStatus = cursor['ConnectionStatus']
 		Popularity = cursor['Popularity']
+		Age = cursor['Age']
 	query = { "username": session['user'] }
 	user = col.find_one(query)
 	blockedUsers = user['Blocked']
@@ -517,7 +539,7 @@ def viewprofile(username):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity)
+	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity)
 
 @app.route('/profileviews/')
 def profileviews():
@@ -527,16 +549,6 @@ def profileviews():
 		return render_template('index.html')
 	query = ({"username": username})
 	user = col.find_one(query)
-	profileViews = user['ProfileViews']
-	profileViews = profileViews.split(', ')
-	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
-
-@app.route('/blockedusers')
-def adminblockedusers():
-	if (session['user']) != "Admin":
-		return render_template("index.html")
-	query = ({"Blocked"})
-	user = col.find(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
 	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
