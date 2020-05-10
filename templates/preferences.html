@@ -71,7 +71,13 @@ Postal Code: <br><input name="postal code" type="text">
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
 <br>Select images: <input type="file" name="img" multiple>
-<br/><input type="submit" name = "pref" value = "Submit"/>
+<br/><input onclick="locationAlert()" type="submit" name = "pref" value = "Submit"/>
+<script>
+function locationAlert(){
+	confirm("Matcha requires your location to continue. Allow Matcha access to your location?");
+	document.getElementById("alert").innerHTML;
+	}
+	</script>
 </form><br/>
 </body>
 </html>

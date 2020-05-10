@@ -436,7 +436,6 @@ def preferences_handler():
 	name = request.form['name']
 	surname = request.form['surname']
 	gender = request.form['gender']
-	postal_code = request.form['postal code']
 	sexual = request.form['sexual']
 	bio = request.form['bio']
 	animals = request.form['animals']
@@ -448,7 +447,8 @@ def preferences_handler():
 	index = 0
 	res = requests.get('https://ipinfo.io')
 	location_data = res.json()
-	suburb = location_data['city']
+	suburb = location_data['city'] + ', ' + location_data['region'] 
+	postal_code = location_data['postal']
 	for file in uploaded_images:
 		index += 1
 		if (index == 1):
