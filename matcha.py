@@ -174,8 +174,7 @@ def home():
 			thing.sortByValue = int(sortby[0] + sortby[1])
 			sortby = sortby[2:]
 			thing.sortBy = sortby if sortby else None
-	else:
-		thing.hasFilters = False
+	elif thing.hasFilters == False:
 		thing.hasSort = False
 		thing.minAge = 18
 		thing.maxAge = 100
@@ -264,7 +263,7 @@ def home():
 				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
 				compatibleUser['Food'] == thing.tagFood and compatibleUser['Music'] == thing.tagMusic and
 				compatibleUser['Movies'] == thing.tagMovies and compatibleUser['Animals'] == thing.tagAnimals and
-				compatibleUser['Sports'] == thing.tagSports and compatibleUser['username'] == thing.suburb):
+				compatibleUser['Sports'] == thing.tagSports and compatibleUser['Suburb'] == thing.suburb):
 					compatibleUsersArr.append(compatibleUser)
 					index = 0
 		if (compatibleUsersArr):
@@ -294,7 +293,7 @@ def like(likedUser):
 		return render_template('index.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
-	compatibleUserPopularity = (compatibleUser['Popularity'] + 1) 
+	compatibleUserPopularity = (int(compatibleUser['Popularity']) + 1) 
 	compatibleUserLikes = compatibleUser['Likes']
 	compatibleUserLikesArr = compatibleUserLikes.split(', ')
 	compatibleUserMatches = compatibleUser['Matches']
@@ -332,7 +331,7 @@ def dislike(dislikedUser):
 	userDislikes = user['Dislikes']
 	query = ({"username": dislikedUser})
 	user = col.find_one(query)
-	userPopularity = (user['Popularity'] - 1)
+	userPopularity = (int(user['Popularity']) - 1)
 	userDislikes = dislikedUser if userDislikes == '' else userDislikes + ', ' + dislikedUser
 	query = { "$set": {'Dislikes': userDislikes}}
 	col.update_one({ "username": session['user'] }, query)
