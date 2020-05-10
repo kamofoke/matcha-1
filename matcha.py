@@ -162,11 +162,17 @@ def home():
 			thing.tagSports = request.form['sports']
 			thing.tagMovies = request.form['movies']
 			thing.tagMusic = request.form['music']
+			thing.tagAny = request.form['any']
 			thing.tagAnimalsCheck = 'checked' if request.form['animals'] == 'yes' else 'no'
 			thing.tagFoodCheck = 'checked' if request.form['food'] == 'yes' else 'no'
 			thing.tagSportsCheck = 'checked' if request.form['sports'] == 'yes' else 'no'
 			thing.tagMoviesCheck = 'checked' if request.form['movies'] == 'yes' else 'no'
 			thing.tagMusicCheck = 'checked' if request.form['music'] == 'yes' else 'no'
+			thing.tagAnyCheck = 'checked' if request.form['any'] == 'yes' else 'no'
+			if (thing.tagAny == 'yes'):
+				thing.hasTags = False
+			else:
+				thing.hasTags = True
 			thing.suburb = Suburb if request.form['searchByLocation'] == '' else request.form['searchByLocation']
 		elif typeof == 'sort':
 			thing.hasSort = True
@@ -185,6 +191,8 @@ def home():
 		thing.tagSportsCheck = 'unchecked'
 		thing.tagMoviesCheck = 'unchecked'
 		thing.tagMusicCheck = 'unchecked'
+		thing.tagAnyCheck = 'checked'
+		thing.hasTags = False
 		thing.tagAnimals = "no"
 		thing.tagFood = "no"
 		thing.tagSports = "no"
@@ -246,7 +254,7 @@ def home():
 		for compatibleUser in compatibleUsers:
 			if (thing.hasFilters == False):
 				if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
-				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'] == thing.suburb):
+				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
 					compatibleUsersArr.append(compatibleUser)
 					for tag in tagsArr:
 						if (user[tag] == compatibleUser[tag]):
@@ -257,17 +265,23 @@ def home():
 						index = commonTagsArr.index(max(commonTagsArr))
 					else:
 						index = 0
+			elif (thing.hasTags == False and compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
+				compatibleUser['username'] not in blockedArr and 
+				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
+				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
+				compatibleUser['Suburb'].upper() == thing.suburb.upper()):
+					compatibleUsersArr.append(compatibleUser)
+					index = 0
 			elif (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and 
 				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
 				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
 				compatibleUser['Food'] == thing.tagFood and compatibleUser['Music'] == thing.tagMusic and
 				compatibleUser['Movies'] == thing.tagMovies and compatibleUser['Animals'] == thing.tagAnimals and
-				compatibleUser['Sports'] == thing.tagSports and compatibleUser['Suburb'] == thing.suburb):
+				compatibleUser['Sports'] == thing.tagSports and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
 					compatibleUsersArr.append(compatibleUser)
 					index = 0
 		if (compatibleUsersArr):
-			print(compatibleUsersArr)
 			Username1 = compatibleUsersArr[index]['username']
 			Name1 = compatibleUsersArr[index]['Name']
 			Surname1 = compatibleUsersArr[index]['Surname']
