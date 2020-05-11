@@ -25,7 +25,10 @@
     </ul>
 
     <center><div class="container">
-            <h1>Notifications</h1>
+        <h1>Notifications</h1>
+        {% if not data[0]  %}
+            <h3>No Notifications</h1>
+        {% endif %}
         {% for thing in data %}
         <h4>{{ thing["Subject"] }}</h4>
 		<h6>{{ thing["content"]}}</h6>
