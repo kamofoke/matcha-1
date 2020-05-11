@@ -4,26 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href = "{{ url_for('static', filename = 'css/main.css')}}" rel = "stylesheet">
     <link href = "{{ url_for('static', filename = 'css/nav.css')}}" rel = "stylesheet">
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <title>Document</title>
+    <link rel="shortcut icon" href="#" />
+    <title>My Profile</title>
 </head>
 <body>
 
 	<ul class="topnav">
-	  <li><a href="/home">Home</a></li>
-	  <li><a class="active" href="/profile">Profile</a></li>
-	  <li><a href="#contact">-blank-</a></li>
 	  <li><a href="{{ url_for('home') }}">Home</a></li>
       <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
       <li><a href="{{ url_for('matches') }}">Matches</a></li>
       <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
       <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+	  <li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
 	  <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
 	</ul>
 	
@@ -116,32 +115,47 @@
                 <div class = "profile_container">
                     <div class="profile-content">
                         <h3 style="align-content: center;">User Information</h3>
+						{% if age %}
+						<h5>Age</h5>
+						<div class="info">
+							{{age}}
+						</div>
+						{% endif %}
 						{% if bio %}
-                        <h5>Bio</h5>
-                        <div class="info">
-                            {{bio}}
-                        </div>
+						<h5>Bio</h5>
+						<div class="info">
+							{{bio}}
+						</div>
 						{% endif %}
 						{% if gender %}
-                        <h5>Gender</h5>
-                        <div class="info">
-                            {{gender}}
-                        </div>
+						<h5>Gender</h5>
+						<div class="info">
+							{{gender}}
+						</div>
 						{% endif %}
 						{% if sexual_orientation %}
-                        <h5>Sexual Orientation</h5>
+						<h5>Sexual Orientation</h5>
+						<div class="info">
+							{{sexual_orientation}}
+						</div>
+                        {% endif %}
+                        {% if popularity != None %}
+                        <h5>Popularity</h5>
                         <div class="info">
-                            {{sexual_orientation}}
+                            {{popularity}}
                         </div>
 						{% endif %}
 						{% if suburb %}
-                        <h5>Suburb</h5>
-                        <div class="info">
-                            {{suburb}}
-                        </div>
+						<h5>Suburb</h5>
+						<div class="info">
+							{{suburb}}
+						</div>
 						{% endif %}
 						{% if postal_code %}
                         <h5>Postal Code</h5>
+                        <div class="info">
+							{{postal_code}}
+						</div>
                         {% endif %}
                         <br>
 						{% for image in ImgArr[1:]: %}

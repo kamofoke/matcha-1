@@ -333,7 +333,7 @@ def like(likedUser):
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
-		q = { "username": likedUser, "Subject": "Somebody Likes You :)","content":"Congratulations "+ likedUser + ","+session['user'] +" just liked you!!!View their profile, maybe you will like them back ;)","status": "0" }
+		q = { "username": likedUser, "Subject": "Somebody Likes You :)","content":"Congratulations "+ likedUser + ", "+session['user'] +" just liked you!!!View their profile, maybe you will like them back ;)","status": "0" }
 		q1 = {"username": likedUser}
 		ud = col.find(q1)
 		a = []

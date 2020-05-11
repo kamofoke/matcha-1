@@ -1,23 +1,27 @@
-{% extends 'base.html' %}
-
-{% block head %}
-
-
-
-{% endblock %}
-
-{% block body %}
-
-{% endblock %}
-{% block header %}
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="150" height="auto"></div>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href = "{{ url_for('static', filename = 'css/main.css')}}" rel = "stylesheet">
+    <link href = "{{ url_for('static', filename = 'css/nav.css')}}" rel = "stylesheet">
+    <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<link rel="shortcut icon" href="#" />
+	<title>Preferences</title>
+	<center><div id="logo"><img class = "center" src="{{url_for('static', filename='matcha-logo.png')}}" alt="" width="150" height="auto"></div></center>
 </head>
 ​
+<ul class="topnav">
+	<li><a href="">Preferences</a></li>
+	<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+</ul>
 <body>
+<center>
 	{% if error == 1 %}
 		<h3>Please do not select more than 5 images</h3>
 	{% endif %}
@@ -31,7 +35,6 @@ Name: <input name="name" type="text" required> Surname: <input name="surname" ty
 <input type="radio" name="gender" value="male" checked="checked">Male
 <input type="radio" name="gender" value="female">Female
 <input type="radio" name="gender" value="other">Other<br>
-Postal Code: <br><input name="postal code" type="text">
 <p>Sexual Preference:</p>
 <input type="radio" name="sexual" value="homosexual">Homosexual
 <input type="radio" name="sexual" value="heterosexual">Heterosexual
@@ -55,20 +58,15 @@ Postal Code: <br><input name="postal code" type="text">
 <input type="radio" name="food" value="yes">Yes
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
-<br>Select images: <input type="file" name="img" multiple>
-<div class="location"></div>
-    <script>
-	$.ajax({
-		url: "https://geolocation-db.com/jsonp",
-		jsonpCallback: "callback",
-		dataType: "jsonp",
-		success: function( location ) {
-			$('.location').html(`<input type="hidden" name="location" value="${location.city}">`);
-		}
-	});		
-    </script>
-<br/><input type="submit" name = "pref" value = "Submit"/>
+<br>Select images: <input type="file" name="img" multiple required>
+<br/><input onclick="locationAlert()" type="submit" name = "pref" value = "Submit"/>
+<script>
+function locationAlert(){
+	confirm("Matcha requires your location to continue. Allow Matcha access to your location?");
+	document.getElementById("alert").innerHTML;
+	}
+	</script>
 </form><br/>
+</center>
 </body>
 </html>
-{% endblock %}
