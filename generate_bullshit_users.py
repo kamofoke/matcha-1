@@ -9,6 +9,7 @@ fake = Faker()
 cluster = MongoClient('mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority')
 db = cluster['Matcha']
 col = db['Users']
+noti = db['Notifications']
 
 # cluster = MongoClient('localhost', 27017)
 # db = cluster.matcha
@@ -48,6 +49,7 @@ def hash_password(password):
 
 def createUsers():
 	col.delete_many( { } )
+	noti.delete_many( { } )
 	i = 0
 	while (i < 500):
 		# sexual orientation

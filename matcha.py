@@ -19,6 +19,7 @@ app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
 db = cluster["Matcha"]
 col = db["Users"]
+notif = db["Notifications"]
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -134,6 +135,14 @@ def home():
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	user = col.find_one(query)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
 	if (user):
 		Food = user['Food']
 		Music = user['Music']
@@ -162,17 +171,11 @@ def home():
 			thing.tagSports = request.form['sports']
 			thing.tagMovies = request.form['movies']
 			thing.tagMusic = request.form['music']
-			thing.tagAny = request.form['any']
 			thing.tagAnimalsCheck = 'checked' if request.form['animals'] == 'yes' else 'no'
 			thing.tagFoodCheck = 'checked' if request.form['food'] == 'yes' else 'no'
 			thing.tagSportsCheck = 'checked' if request.form['sports'] == 'yes' else 'no'
 			thing.tagMoviesCheck = 'checked' if request.form['movies'] == 'yes' else 'no'
 			thing.tagMusicCheck = 'checked' if request.form['music'] == 'yes' else 'no'
-			thing.tagAnyCheck = 'checked' if request.form['any'] == 'yes' else 'no'
-			if (thing.tagAny == 'yes'):
-				thing.hasTags = False
-			else:
-				thing.hasTags = True
 			thing.suburb = Suburb if request.form['searchByLocation'] == '' else request.form['searchByLocation']
 		elif typeof == 'sort':
 			thing.hasSort = True
@@ -180,7 +183,8 @@ def home():
 			thing.sortByValue = int(sortby[0] + sortby[1])
 			sortby = sortby[2:]
 			thing.sortBy = sortby if sortby else None
-	elif thing.hasFilters == False:
+	else:
+		thing.hasFilters = False
 		thing.hasSort = False
 		thing.minAge = 18
 		thing.maxAge = 100
@@ -191,8 +195,6 @@ def home():
 		thing.tagSportsCheck = 'unchecked'
 		thing.tagMoviesCheck = 'unchecked'
 		thing.tagMusicCheck = 'unchecked'
-		thing.tagAnyCheck = 'checked'
-		thing.hasTags = False
 		thing.tagAnimals = "no"
 		thing.tagFood = "no"
 		thing.tagSports = "no"
@@ -254,7 +256,7 @@ def home():
 		for compatibleUser in compatibleUsers:
 			if (thing.hasFilters == False):
 				if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
-				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
+				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'] == thing.suburb):
 					compatibleUsersArr.append(compatibleUser)
 					for tag in tagsArr:
 						if (user[tag] == compatibleUser[tag]):
@@ -265,23 +267,17 @@ def home():
 						index = commonTagsArr.index(max(commonTagsArr))
 					else:
 						index = 0
-			elif (thing.hasTags == False and compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
-				compatibleUser['username'] not in blockedArr and 
-				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
-				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
-				compatibleUser['Suburb'].upper() == thing.suburb.upper()):
-					compatibleUsersArr.append(compatibleUser)
-					index = 0
 			elif (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and 
 				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
 				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
 				compatibleUser['Food'] == thing.tagFood and compatibleUser['Music'] == thing.tagMusic and
 				compatibleUser['Movies'] == thing.tagMovies and compatibleUser['Animals'] == thing.tagAnimals and
-				compatibleUser['Sports'] == thing.tagSports and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
+				compatibleUser['Sports'] == thing.tagSports and compatibleUser['username'] == thing.suburb):
 					compatibleUsersArr.append(compatibleUser)
 					index = 0
 		if (compatibleUsersArr):
+			print(compatibleUsersArr)
 			Username1 = compatibleUsersArr[index]['username']
 			Name1 = compatibleUsersArr[index]['Name']
 			Surname1 = compatibleUsersArr[index]['Surname']
@@ -296,8 +292,8 @@ def home():
 			Sexual_Orientation1 = compatibleUsersArr[index]['Sexual Orientation']
 			Image_Name_Arr = (compatibleUsersArr[index]['Images']).split(', ')
 			Age = compatibleUsersArr[index]['Age']
-			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
-	return render_template('home.html', thing=thing, nomatches=1, user=session['user'])
+			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr,num=num )
+	return render_template('home.html', thing=thing, nomatches=1, user=session['user'],num=num)
 
 @app.route('/like<string:likedUser>')
 def like(likedUser):
@@ -307,7 +303,7 @@ def like(likedUser):
 		return render_template('index.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
-	compatibleUserPopularity = (int(compatibleUser['Popularity']) + 1) 
+	compatibleUserPopularity = (compatibleUser['Popularity'] + 1) 
 	compatibleUserLikes = compatibleUser['Likes']
 	compatibleUserLikesArr = compatibleUserLikes.split(', ')
 	compatibleUserMatches = compatibleUser['Matches']
@@ -325,10 +321,26 @@ def like(likedUser):
 		col.update_one({ "username": session['user'] }, query)
 		query = { "$set": {'Matches': compatibleUserMatches }}
 		col.update_one({ "username": likedUser }, query)
+		q = { "username": likedUser, "Subject": "You Got A Match :)","content":"Congratulations "+ likedUser + ", You just got a match, "+session['user'] +" just liked you back. You can now chat with them!!!","status": "0" }
+		q1 = {"username": likedUser}
+		ud = col.find(q1)
+		a = []
+		for x in ud:
+			a.append(x)
+		if a[0]['Noti'] == "1":
+			notif.insert_one(q)
 	else:
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
+		q = { "username": likedUser, "Subject": "Somebody Likes You :)","content":"Congratulations "+ likedUser + ", "+session['user'] +" just liked you!!!View their profile, maybe you will like them back ;)","status": "0" }
+		q1 = {"username": likedUser}
+		ud = col.find(q1)
+		a = []
+		for x in ud:
+			a.append(x)
+		if a[0]['Noti'] == "1":
+			notif.insert_one(q)
 	query = { "$set": { 'Popularity': compatibleUserPopularity, 'ProfileLikes': userProfileLikes }}
 	col.update_one({ "username": likedUser }, query)
 	return redirect(url_for('home'))
@@ -343,9 +355,17 @@ def dislike(dislikedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
+	q = { "username": userDislikes, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ userDislikes + "!!!!!!! :("+session['user'] +"     just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
+	q1 = {"username": userDislikes}
+	ud = col.find(q1)
+	a = []
+	for x in ud:
+		a.append(x)
+	if a[0]['Noti'] == "1":
+		notif.insert_one(q)
 	query = ({"username": dislikedUser})
 	user = col.find_one(query)
-	userPopularity = (int(user['Popularity']) - 1)
+	userPopularity = (user['Popularity'] - 1)
 	userDislikes = dislikedUser if userDislikes == '' else userDislikes + ', ' + dislikedUser
 	query = { "$set": {'Dislikes': userDislikes}}
 	col.update_one({ "username": session['user'] }, query)
@@ -409,7 +429,32 @@ def matches():
 	user = col.find_one(query)
 	matches = user['Matches']
 	matches = matches.split(', ')
-	return render_template('matches.html', matches=matches, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('matches.html', matches=matches, user=session['user'],num=num)
+
+@app.route('/notifications')
+def notifications():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	for x in dat:
+		data.append(x)
+	data.reverse()
+	myquery = {"username": session['user']}
+	newvalues = {"$set": { "status": "1" }}
+	notif.update_many(myquery, newvalues)
+	return render_template('notifications.html', data=data, user=session['user'])
 
 @app.route('/notis')
 def thing():
@@ -449,6 +494,7 @@ def preferences_handler():
 	name = request.form['name']
 	surname = request.form['surname']
 	gender = request.form['gender']
+	postal_code = request.form['postal code']
 	sexual = request.form['sexual']
 	bio = request.form['bio']
 	animals = request.form['animals']
@@ -460,8 +506,7 @@ def preferences_handler():
 	index = 0
 	res = requests.get('https://ipinfo.io')
 	location_data = res.json()
-	suburb = location_data['city'] + ', ' + location_data['region'] 
-	postal_code = location_data['postal']
+	suburb = location_data['city']
 	for file in uploaded_images:
 		index += 1
 		if (index == 1):
@@ -511,7 +556,15 @@ def profile():
 		Image_Name_Arr = cursor['Images'].split(', ')
 		Popularity = cursor['Popularity']
 		Age = cursor['Age']
-	return render_template('profile.html', user=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile.html', user=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity,num=num)
 
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
@@ -552,7 +605,23 @@ def viewprofile(username):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity)
+	q = { "username": username, "Subject": "Somebody Viewed Your Profile :)","content":"Hey There "+ username + ","+session['user'] +" just viewed your profile!!!","status": "0" }
+	q1 = {"username": username}
+	ud = col.find(q1)
+	a = []
+	for x in ud:
+		a.append(x)
+	if a[0]['Noti'] == "1":
+		notif.insert_one(q)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity,num=num)
 
 @app.route('/profileviews/')
 def profileviews():
@@ -564,7 +633,15 @@ def profileviews():
 	user = col.find_one(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
-	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile-views.html', profileViews=profileViews, user=session['user'],num=num)
 
 @app.route('/profilelikes/')
 def profilelikes():
@@ -576,7 +653,15 @@ def profilelikes():
 	user = col.find_one(query)
 	profileLikes = user['ProfileLikes']
 	profileLikes = profileLikes.split(', ')
-	return render_template('profile-likes.html', profileLikes=profileLikes, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile-likes.html', profileLikes=profileLikes, user=session['user'],num=num)
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
