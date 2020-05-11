@@ -2,16 +2,17 @@ from pymongo import MongoClient
 from faker import Faker
 import hashlib, os, binascii
 import random
+from datetime import date
 
 fake = Faker()
 
-# cluster = MongoClient('mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority')
-# db = cluster['Matcha']
-# col = db['Users']
+cluster = MongoClient('mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority')
+db = cluster['Matcha']
+col = db['Users']
 
-cluster = MongoClient('localhost', 27017)
-db = cluster.matcha
-col = db.users
+# cluster = MongoClient('localhost', 27017)
+# db = cluster.matcha
+# col = db.users
 
 # Pref:'1'
 # Verify:'1'
@@ -46,6 +47,7 @@ def hash_password(password):
 	return (salt + pwdhash).decode('ascii')
 
 def createUsers():
+	col.delete_many( { } )
 	i = 0
 	while (i < 500):
 		# sexual orientation
@@ -204,10 +206,12 @@ def createUsers():
 		moviesQuery = 'yes' if movies == 1 else 'no'
 		musicQuery = 'yes' if music == 1 else 'no'
 		sportsQuery = 'yes' if sports == 1 else 'no'
+		popularity = random.randint(0, 100)
+		lastSeen = str(date.today())
 		query = {'Pref': '1', 'Verify': '1', 'Matches': '', 'Likes': '', 'Dislikes': '', 'Name': name, 'Surname': surname, 'Age': age, 'Email': email, 'username': username, 'Password': hash_password('Password123!'), 
-				'Gender': gender, 'Popularity': 0, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
+				'Gender': gender, 'Popularity': popularity, 'Blocked': '', 'ProfileViews': '', 'ProfileLikes': '', 'Suburb': location, 'Postal Code': random.randint(1000, 2999), 'Sexual Orientation': SO, 
 				'Bio': 'I am ' + name , 'Animals': animalsQuery, 'Music': musicQuery, 'Sports': sportsQuery, 'Food': foodQuery, 'Movies': moviesQuery, 'Noti': '1', 
-				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5', 'Token' : ''}
+				'Images': 'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4, nemgggxqfkphbkh5', 'Token' : '', 'ConnectionStatus' : lastSeen}
 		col.insert_one(query)
 		print(query)
 		i += 1
