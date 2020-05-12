@@ -14,33 +14,8 @@ noti = db['Notifications']
 # cluster = MongoClient('localhost', 27017)
 # db = cluster.matcha
 # col = db.users
+# noti = db.Notifications
 
-# Pref:'1'
-# Verify:'1'
-# Matches:''
-# Likes:''
-# Dislikes:''
-# Name:'Tanya'
-# Surname:'Loft'
-# Age:22
-# Email:'tanya@gmail.com'
-# username:'tanyaloft'
-# Password:'876ee9c5bcdd53892dd18cb268d4b93c42ca9ee0eb3f47ef8fe2c823c1883056f6d0f1...'
-# Gender:'female'
-# Images:'trtvyoxhwtnwcxw1, vxrscllmrvqimvu2, ggzdavmalijyoun3, temeocunmfgvgtx4...'
-# Popularity:1
-# Blocked:'jerry, tc, hs, sm, thelani'
-# ProfileViews:'hs, sm'
-# ProfileLikes:'thelani, sm'
-# Suburb:'Suburb'
-# Postal Code:'1989'
-# Sexual Orientation:'heterosexual'
-# Bio:'I am Tanya'
-# Animals:'yes'
-# Food:'yes'
-# Movies:'yes'
-# Music:'yes'
-# Sports:'yes'
 def hash_password(password):
 	salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
 	pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), salt, 100000)
