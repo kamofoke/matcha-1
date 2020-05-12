@@ -14,16 +14,23 @@
     <title>Document</title>
 </head>
 <body>
+	<script> 
+		$(document).ready(function(){
+			setInterval(function(){
+     		 $("#here").load(window.location.href + " #here" );
+		}, 1000);
+		});
+	</script>
+	<div id = "here">
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-        <li><a href="{{ url_for('notifications') }}">Notifications</a></li>
-		<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('notifications') }}">Notifications</a></li>
+        <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
-
     <center><div class="container">
         <h1>Notifications</h1>
         {% if not data[0]  %}
@@ -33,4 +40,4 @@
         <h4>{{ thing["Subject"] }}</h4>
 		<h6>{{ thing["content"]}}</h6>
         {%endfor%}
-    </div></center>
+    </div></div></center>
