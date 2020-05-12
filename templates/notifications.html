@@ -14,14 +14,22 @@
     <title>Document</title>
 </head>
 <body>
+	<script> 
+		$(document).ready(function(){
+			setInterval(function(){
+     		 $("#here").load(window.location.href + " #here" );
+		}, 1000);
+		});
+	</script>
+	<div id = "here">
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-        <li><a href="{{ url_for('notifications') }}">Notifications</a></li>
-		<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('notifications') }}">Notifications</a></li>
+	<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
 
     <center><div class="container">
@@ -30,7 +38,12 @@
             <h3>No Notifications</h1>
         {% endif %}
         {% for thing in data %}
-        <h4>{{ thing["Subject"] }}</h4>
-		<h6>{{ thing["content"]}}</h6>
+        {% if thing.status == '0' %}
+        <h4 style="color:#66ff00">{{ thing["Subject"] }}</h4>
+        <h6 style="color:#66ff00">{{ thing["content"]}}</h6>
+        {% elif thing.status == '1' %}
+        <h4 style="color:red">{{ thing["Subject"] }}</h4>
+        <h6 style="color:red">{{ thing["content"]}}</h6>
+        {% endif %}
         {%endfor%}
-    </div></center>
+    </div></div></center>
