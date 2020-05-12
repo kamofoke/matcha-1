@@ -125,7 +125,7 @@ def logout():
 	lastSeen = str(date.today())
 	col.update_one({"username": session["user"]},{"$set": {'ConnectionStatus': lastSeen } })
 	session.pop("user", None)
-	return render_template('index.html')
+	return redirect(url_for('index'))
 		
 @app.route('/home', methods=['GET', 'POST'])
 def home():
