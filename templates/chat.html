@@ -11,8 +11,9 @@
     <link href = "{{ url_for('static', filename = 'css/nav.css')}}" rel = "stylesheet">
     <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" ></script>
     <link rel="shortcut icon" href="#" />
-    <title>Home</title>
+    <title>Your Matches</title>
 </head>
 <body>
 	<ul class="topnav">
@@ -21,8 +22,53 @@
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
         <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-        <li><a href="{{ url_for('chat') }}">Chat</a></li>
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
-    </ul>  
+    </ul>
+
+    <center><div class="container">
+        {% if not room and chatter and chatee and name %}
+            <h1>you have no potential chats</h1>
+        {% else %}
+            <h1>Chat with {{name}}</h1>
+            <div id="newmessage"></div>
+            <form id="messagebox">
+                <input type="text" name="draft" id="ddraft" placeholder="enter message here">
+                <button type="submit">send</button>
+            </form>
+            <script>    
+            var protocol = window.location.protocol;
+            const socket = io.connect(protocol + '//' + document.domain + ':' + location.port);
+            socket.on('connect', function () {
+                socket.emit('jointhething', {
+                    chatter: "{{ chatter }}",
+                    room: "{{ room }}"
+                });
+                var tosend = document.getElementById('ddraft');
+                var messagebox = document.getElementById('messagebox');
+                messagebox.onsubmit = function (e) {
+                    console.log("submitted");
+                    e.preventDefault();
+                    var messagetrim = tosend.value.trim();
+                    if(messagetrim.length)
+                    {
+                        socket.emit('sendthething', {
+                            chatter: "{{ chatter }}",
+                            room: "{{ room }}",
+                            message: messagetrim
+                        });
+                    }
+                    tosend.value = ''; 
+                }; 
+                socket.on('receive_message', function (stuff) {
+                console.log(stuff);
+                const newNode = document.createElement('div');
+                newNode.innerHTML = `<b>${stuff.chatter}:&nbsp;</b> ${stuff.message}`;
+                document.getElementById('newmessage').appendChild(newNode);
+                });
+            });   
+            </script>
+            </html>
+        {% endif %}
+    </div></center>
+   
 </body>
-</html>

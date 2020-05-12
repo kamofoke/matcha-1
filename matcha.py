@@ -602,7 +602,7 @@ def joinevent(stuff):
 @socketio.on('sendthething')
 def sendevent(stuff):
     app.logger.info("message: {} from {} to {}". format(stuff['message'], stuff['chatter'], stuff['room']))
-    socketio.emit('receive_message', stuff, room=stuff['room'])
+    socketio.emit('receive_message', stuff, chatee=stuff['room'])
 
 #@socketio.on('chat_notif')
 
