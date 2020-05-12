@@ -15,13 +15,13 @@
     <title>Home</title>
 </head>
 <body>
-	<script> 
+	<!-- <script> 
 		$(document).ready(function(){
 			setInterval(function(){
      		 $("#here").load(window.location.href + " #here" );
 		}, 3000);
 		});
-	</script>
+	</script> -->
 	<div id = "here">
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -33,7 +33,7 @@
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
     </div>
-    <center><div class="container">
+    <center>
         <h1>Home</h1>
         <form action=" {{ url_for('home') }}" method = "POST" enctype="multipart/form-data">
             <input type="hidden" name="typeOf" value="search">
@@ -89,30 +89,33 @@
 
             <button type="submit" class="btn btn-success">Submit</button>
         </form>
-        <div class="row profile">
-			{% if nomatches == 1 %}
-				<h1>There is no one new around you!</h1>
-			{% else %}
+        {% if nomatches == 1 %}
+        <h1>There is no one new around you!</h1>
+        {% else %}
+        <div class="container">
+        {% for compatibleUser in compatibleUsersArr %}
+        <br>
+        <div class="row">
             <div class="col-md-3">
                 <div class="profile-sidebar">
-					{% if ImgArr[0] %}
+					{% if compatibleUser['Images'][0] %}
                     <div class="profile-userpic">
-						<img class = "img-responsive" src="../static/profile_pictures/{{ ImgArr[0] + '.png'}}" alt="">
+						<img class = "img-responsive" src="../static/profile_pictures/{{ compatibleUser['Images'][0] + '.png'}}" alt="">
 					{% endif %}
                     </div>
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
-                            {% if name and surname %}
-                            <a href="{{ url_for('viewprofile', username = username) }}">
-                            <h4>{{name}}</h4>
-                            <h4>{{surname}}</h4>
+                            {% if compatibleUser['Name'] and compatibleUser['Surname'] %}
+                            <a href="{{ url_for('viewprofile', username = compatibleUser['username']) }}">
+                            <h4>{{compatibleUser['Name']}}</h4>
+                            <h4>{{compatibleUser['Surname']}}</h4>
                             </a>
                             {% endif %}
                         </div>
                     </div>
                     <div class="profile-userbuttons">
-                        <a href = "{{ url_for('like', likedUser = username) }}" class="fa fa-heart" style="font-size:30px;color:pink;"></a>
-                        <a href = "{{ url_for('dislike', dislikedUser = username) }}" class="fa fa-times" style="font-size:30px;color:red;"></a>
+                        <a href = "{{ url_for('like', likedUser = compatibleUser['username']) }}" class="fa fa-heart" style="font-size:30px;color:pink;"></a>
+                        <a href = "{{ url_for('dislike', dislikedUser = compatibleUser['username']) }}" class="fa fa-times" style="font-size:30px;color:red;"></a>
                     </div>
                 </div>
             </div>
@@ -121,45 +124,47 @@
                     <div class="profile-content">
                         <h3 style="align-content: center;">User Information</h3>
                         <br>
-						{% if age %}
+						{% if compatibleUser['Age'] %}
 						<h5>Age</h5>
 						<div class="info">
-							{{age}}
+							{{compatibleUser['Age']}}
 						</div>
 						{% endif %}
-						{% if bio %}
+						{% if compatibleUser['Bio'] %}
 						<h5>Bio</h5>
 						<div class="info">
-							{{bio}}
+							{{compatibleUser['Bio']}}
 						</div>
 						{% endif %}
-						{% if gender %}
+						{% if compatibleUser['Gender'] %}
 						<h5>Gender</h5>
 						<div class="info">
-							{{gender}}
+							{{compatibleUser['Gender']}}
 						</div>
 						{% endif %}
-						{% if sexual_orientation %}
+						{% if compatibleUser['Sexual Orientation'] %}
 						<h5>Sexual Orientation</h5>
 						<div class="info">
-							{{sexual_orientation}}
+							{{compatibleUser['Sexual Orientation']}}
 						</div>
 						{% endif %}
-						{% if suburb %}
+						{% if compatibleUser['Suburb'] %}
 						<h5>Suburb</h5>
 						<div class="info">
-							{{suburb}}
+							{{compatibleUser['Suburb']}}
 						</div>
 						{% endif %}
                         <br>
-                        <a href="{{ url_for('viewprofile', username = username) }}"><button class="btn btn-dark">View {{username}}'s full profile</button></a>
-                        {% endif %}
-                        <br>
+                        <a href="{{ url_for('viewprofile', username = compatibleUser['username']) }}"><button class="btn btn-dark">View {{compatibleUser['username']}}'s full profile</button></a>
+                        </div>
                     </div>
                 </div>
-			</div>
+            </div>
+        {% endfor %}
         </div>
-    </div></center>
+        {% endif %}
+        <br>
+    </center>
     <br>
     <br>    
 </body>

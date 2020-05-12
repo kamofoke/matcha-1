@@ -107,9 +107,11 @@ def login():
 					thing.hasFilters = False
 					if pref == "0":
 						session['user'] = username
+						thing.hasPref = False
 						return render_template('preferences.html', username = username)
 					else:
-						session['user'] = username 
+						session['user'] = username
+						thing.hasPref = True
 						return redirect(url_for('home'))
 				else:
 					return render_template('index.html', error = 10)
@@ -122,6 +124,10 @@ def login():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
 	lastSeen = str(date.today())
 	col.update_one({"username": session["user"]},{"$set": {'ConnectionStatus': lastSeen } })
 	session.pop("user", None)
@@ -133,6 +139,10 @@ def home():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	username = session['user']
 	res = requests.get('https://ipinfo.io')
 	location_data = res.json()
@@ -274,23 +284,26 @@ def home():
 			if (thing.hasFilters == False):
 				if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
-					compatibleUsersArr.append(compatibleUser)
 					for tag in tagsArr:
 						if (user[tag] == compatibleUser[tag]):
 							commonTags += 1
-					commonTagsArr.append(commonTags)
-					commonTags = 0
-					if (thing.hasSort == False):
-						index = commonTagsArr.index(max(commonTagsArr))
+					if (commonTagsArr):
+						if (commonTags >= commonTagsArr[0]):
+							commonTagsArr.insert(0, commonTags)
+							compatibleUsersArr.insert(0, compatibleUser)
+						else:
+							compatibleUsersArr.append(compatibleUser)
+							commonTagsArr.append(commonTags)
 					else:
-						index = 0
+						compatibleUsersArr.append(compatibleUser)
+						commonTagsArr.append(commonTags)
+					commonTags = 0
 			elif (thing.hasTags == False and compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and 
 				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
 				int(compatibleUser['Popularity']) >= thing.minPopularity and int(compatibleUser['Popularity']) <= thing.maxPopularity and
 				compatibleUser['Suburb'].upper() == thing.suburb.upper()):
 					compatibleUsersArr.append(compatibleUser)
-					index = 0
 			elif (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and 
 				int(compatibleUser['Age']) >= thing.minAge and int(compatibleUser['Age']) <= thing.maxAge and
@@ -299,23 +312,10 @@ def home():
 				compatibleUser['Movies'] == thing.tagMovies and compatibleUser['Animals'] == thing.tagAnimals and
 				compatibleUser['Sports'] == thing.tagSports and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
 					compatibleUsersArr.append(compatibleUser)
-					index = 0
 		if (compatibleUsersArr):
-			Username1 = compatibleUsersArr[index]['username']
-			Name1 = compatibleUsersArr[index]['Name']
-			Surname1 = compatibleUsersArr[index]['Surname']
-			Food1 = compatibleUsersArr[index]['Food']
-			Music1 = compatibleUsersArr[index]['Music']
-			Movies1 = compatibleUsersArr[index]['Movies']
-			Animals1 = compatibleUsersArr[index]['Animals']
-			Sports1 = compatibleUsersArr[index]['Sports']
-			Bio1 = compatibleUsersArr[index]['Bio']
-			Suburb1 = compatibleUsersArr[index]['Suburb']
-			Gender1 = compatibleUsersArr[index]['Gender']
-			Sexual_Orientation1 = compatibleUsersArr[index]['Sexual Orientation']
-			Image_Name_Arr = (compatibleUsersArr[index]['Images']).split(', ')
-			Age = compatibleUsersArr[index]['Age']
-			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr, num=num )
+			for compatibleUser in compatibleUsersArr:
+				compatibleUser['Images'] = compatibleUser['Images'].split(", ")
+			return render_template('home.html', thing=thing, user=session['user'], compatibleUsersArr=compatibleUsersArr, num=num, nomatches=0 )
 	return render_template('home.html', thing=thing, nomatches=1, user=session['user'], num=num)
 
 @app.route('/like<string:likedUser>')
@@ -324,6 +324,10 @@ def like(likedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
 	compatibleUserPopularity = (int(compatibleUser['Popularity']) + 1) 
@@ -379,6 +383,10 @@ def dislike(dislikedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
@@ -406,6 +414,10 @@ def block(blockedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userBlocked = user['Blocked']
@@ -420,7 +432,11 @@ def unblock(blockedUser):
 	try:
 		username = session['user']
 	except KeyError:
-		return render_template('index.html')	
+		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')	
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userBlocked = user['Blocked']
@@ -438,6 +454,10 @@ def viewblockedusers():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	if (username != "Admin"):
 		return 'You do not have permission to view this page'
 	query = ({"username": username})
@@ -450,6 +470,12 @@ def viewblockedusers():
 def matches():
 	try:
 		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	try:
+		username = session['user']
+		if (thing.hasPref == False):
+			return render_template('preferences.html')
 	except KeyError:
 		return render_template('index.html')
 	query = ({"username": session['user']})
@@ -472,6 +498,10 @@ def notifications():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
@@ -489,6 +519,10 @@ def thing():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	usr = session['user']
 	q1 = { "username": usr }
 	n = "0"
@@ -557,6 +591,10 @@ def editprofile():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	return render_template('preferences.html', username = username)
 
 @app.route('/profile')
@@ -565,6 +603,10 @@ def profile():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -596,9 +638,13 @@ def profile():
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
 	try:
-		sessuser = session['user']
+		username = session['user']
 	except KeyError:
-		return render_template('index.html')	
+		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')	
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -670,6 +716,10 @@ def chat():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	room = request.args.get('room')
 	chatee = request.args.get('chatee')
 	chatter = request.args.get('chatter')
@@ -686,9 +736,9 @@ def chat():
 		if room and chatter and name:
 			return render_template('chat.html', room=room, chatter=chatter, chatee=chatee, name=name, user=session['user'], num=num)
 		else:
-			return redirect(url_for('chat.html'))
+			return redirect(url_for('chat'))
 	else:
-		return render_template(url_for('home'))
+		return redirect(url_for('home'))
 
 @socketio.on('jointhething')
 def joinevent(stuff):
@@ -709,6 +759,10 @@ def profileviews():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = ({"username": username})
 	user = col.find_one(query)
 	profileViews = user['ProfileViews']
@@ -729,6 +783,10 @@ def profilelikes():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	query = ({"username": username})
 	user = col.find_one(query)
 	profileLikes = user['ProfileLikes']
@@ -749,6 +807,10 @@ def verify(username):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	finally:
 		myquery = { "username": username }
 		newvalues = { "$set": {"Verify": "1"} }
@@ -846,5 +908,7 @@ def randomString(stringLength=8):
 	letters = string.ascii_lowercase
 	return ''.join(random.choice(letters) for i in range(stringLength))
 
+if (__name__ == "__main__"):
+	app.run(debug = True)
 if (__name__ == "__main__"):
 	socketio.run(app, debug=True)
