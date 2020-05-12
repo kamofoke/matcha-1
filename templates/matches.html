@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta http-equiv="refresh" content="5" >
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -15,16 +16,24 @@
     <title>Your Matches</title>
 </head>
 <body>
+	<script> 
+		$(document).ready(function(){
+			setInterval(function(){
+     		 $("#here").load(window.location.href + " #here" );
+		}, 1000);
+		});
+	</script>
+	<div id = "here">
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-        <li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
-		<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
+        <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
-
+    </div>
     <center><div class="container">
         {% if not matches[0] %}
             <h1>You have no matches</h1>
