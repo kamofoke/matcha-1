@@ -29,9 +29,8 @@
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
 		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
 		<li><a href="{{ url_for('notifications') }}">Notifications</a></li>
-	<li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+        <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
-
     <center><div class="container">
         <h1>Notifications</h1>
         {% if not data[0]  %}

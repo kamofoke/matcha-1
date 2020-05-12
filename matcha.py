@@ -24,12 +24,12 @@ col = db["Users"]
 notif = db["Notifications"]
 
 mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
-    "MAIL_PASSWORD": 'matcha1313'
+	"MAIL_SERVER": 'smtp.gmail.com',
+	"MAIL_PORT": 465,
+	"MAIL_USE_TLS": False,
+	"MAIL_USE_SSL": True,
+	"MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+	"MAIL_PASSWORD": 'matcha1313'
 }
 app.config.update(mail_settings)
 mail = Mail(app)
@@ -134,6 +134,14 @@ def home():
 	except KeyError:
 		return render_template('index.html')
 	username = session['user']
+	res = requests.get('https://ipinfo.io')
+	location_data = res.json()
+	suburb = location_data['city'] + ', ' + location_data['region']
+	postal_code = location_data['postal']
+	locationQuery = { 'username' : username }
+	locationChange = col.find_one(locationQuery)
+	if (suburb != locationChange['Suburb']):
+		col.update_one(locationQuery, { '$set': { 'Suburb' : suburb } })
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	user = col.find_one(query)
@@ -307,8 +315,8 @@ def home():
 			Sexual_Orientation1 = compatibleUsersArr[index]['Sexual Orientation']
 			Image_Name_Arr = (compatibleUsersArr[index]['Images']).split(', ')
 			Age = compatibleUsersArr[index]['Age']
-			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr )
-	return render_template('home.html', thing=thing, nomatches=1, user=session['user'])
+			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr, num=num )
+	return render_template('home.html', thing=thing, nomatches=1, user=session['user'], num=num)
 
 @app.route('/like<string:likedUser>')
 def like(likedUser):
@@ -374,8 +382,8 @@ def dislike(dislikedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
-	q = { "username": userDislikes, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ userDislikes + "!!!!!!! :( "+ session['user'] + " just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
-	q1 = {"username": userDislikes}
+	q = { "username": dislikedUser, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ dislikedUser + "!!!!!!! :( "+ session['user'] + " just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
+	q1 = {"username": dislikedUser}
 	ud = col.find(q1)
 	a = []
 	for x in ud:
@@ -524,7 +532,7 @@ def preferences_handler():
 	index = 0
 	res = requests.get('https://ipinfo.io')
 	location_data = res.json()
-	suburb = location_data['city'] + ', ' + location_data['region'] 
+	suburb = location_data['city'] + ', ' + location_data['region']
 	postal_code = location_data['postal']
 	for file in uploaded_images:
 		index += 1
@@ -666,9 +674,17 @@ def chat():
 	chatee = request.args.get('chatee')
 	chatter = request.args.get('chatter')
 	name = request.args.get('name')
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
 	if (chatter == username):
 		if room and chatter and name:
-			return render_template('chat.html', room=room, chatter=chatter, chatee=chatee, name=name)
+			return render_template('chat.html', room=room, chatter=chatter, chatee=chatee, name=name, user=session['user'], num=num)
 		else:
 			return redirect(url_for('chat.html'))
 	else:
