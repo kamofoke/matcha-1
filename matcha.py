@@ -22,12 +22,12 @@ col = db["Users"]
 notif = db["Notifications"]
 
 mail_settings = {
-    "MAIL_SERVER": 'smtp.gmail.com',
-    "MAIL_PORT": 465,
-    "MAIL_USE_TLS": False,
-    "MAIL_USE_SSL": True,
-    "MAIL_USERNAME": 'matcha13.noreply@gmail.com',
-    "MAIL_PASSWORD": 'matcha1313'
+	"MAIL_SERVER": 'smtp.gmail.com',
+	"MAIL_PORT": 465,
+	"MAIL_USE_TLS": False,
+	"MAIL_USE_SSL": True,
+	"MAIL_USERNAME": 'matcha13.noreply@gmail.com',
+	"MAIL_PASSWORD": 'matcha1313'
 }
 app.config.update(mail_settings)
 mail = Mail(app)
@@ -132,6 +132,14 @@ def home():
 	except KeyError:
 		return render_template('index.html')
 	username = session['user']
+	res = requests.get('https://ipinfo.io')
+	location_data = res.json()
+	suburb = location_data['city'] + ', ' + location_data['region']
+	postal_code = location_data['postal']
+	locationQuery = { 'username' : username }
+	locationChange = col.find_one(locationQuery)
+	if (suburb != locationChange['Suburb']):
+		col.update_one(locationQuery, { '$set': { 'Suburb' : suburb } })
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	user = col.find_one(query)
@@ -519,7 +527,7 @@ def preferences_handler():
 	index = 0
 	res = requests.get('https://ipinfo.io')
 	location_data = res.json()
-	suburb = location_data['city'] + ', ' + location_data['region'] 
+	suburb = location_data['city'] + ', ' + location_data['region']
 	postal_code = location_data['postal']
 	for file in uploaded_images:
 		index += 1
