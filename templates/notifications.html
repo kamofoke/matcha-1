@@ -37,7 +37,12 @@
             <h3>No Notifications</h1>
         {% endif %}
         {% for thing in data %}
-        <h4>{{ thing["Subject"] }}</h4>
-		<h6>{{ thing["content"]}}</h6>
+        {% if thing.status == '0' %}
+        <h4 style="color:#66ff00">{{ thing["Subject"] }}</h4>
+        <h6 style="color:#66ff00">{{ thing["content"]}}</h6>
+        {% elif thing.status == '1' %}
+        <h4 style="color:red">{{ thing["Subject"] }}</h4>
+        <h6 style="color:red">{{ thing["content"]}}</h6>
+        {% endif %}
         {%endfor%}
     </div></div></center>
