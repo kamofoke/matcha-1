@@ -8,11 +8,13 @@ from pymongo import MongoClient
 from datetime import date
 import pymongo, random, string
 from pip._vendor import requests
+from flask_socketio import SocketIO, emit, join_room
 
 UPLOAD_FOLDER = './static/profile_pictures'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 
@@ -59,7 +61,7 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Matches": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Matches": "", "Chats": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
 								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
 								msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://localhost:5000/verify/{0}.\n\nThank you.\n".format(username)
@@ -198,7 +200,6 @@ def home():
 			sortby = sortby[2:]
 			thing.sortBy = sortby if sortby else None
 	elif thing.hasFilters == False:
-		thing.hasFilters = False
 		thing.hasSort = False
 		thing.minAge = 18
 		thing.maxAge = 100
@@ -314,8 +315,8 @@ def home():
 			Sexual_Orientation1 = compatibleUsersArr[index]['Sexual Orientation']
 			Image_Name_Arr = (compatibleUsersArr[index]['Images']).split(', ')
 			Age = compatibleUsersArr[index]['Age']
-			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr,num=num )
-	return render_template('home.html', thing=thing, nomatches=1, user=session['user'],num=num)
+			return render_template('home.html', thing=thing, user=session['user'], age=Age, username=Username1, name=Name1, surname=Surname1, food=Food1, music=Music1, movies=Movies1, animals=Animals1, sports=Sports1, bio=Bio1, suburb=Suburb1, gender=Gender1, sexual_orientation=Sexual_Orientation1, ImgArr=Image_Name_Arr, num=num )
+	return render_template('home.html', thing=thing, nomatches=1, user=session['user'], num=num)
 
 @app.route('/like<string:likedUser>')
 def like(likedUser):
@@ -329,19 +330,23 @@ def like(likedUser):
 	compatibleUserLikes = compatibleUser['Likes']
 	compatibleUserLikesArr = compatibleUserLikes.split(', ')
 	compatibleUserMatches = compatibleUser['Matches']
+	compatibleUserchats = compatibleUser['Chats']
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userMatches = user['Matches']
 	userLikes = user['Likes']
+	chats = user['Chats']
 	userProfileLikes = compatibleUser['ProfileLikes']
 	userProfileLikes = session['user'] if userProfileLikes == "" else userProfileLikes + ', ' + session['user']
 	if (session['user'] in compatibleUserLikesArr):
 		compatibleUserMatches = session['user'] if compatibleUserMatches == "" else compatibleUserMatches + ', ' + session['user']
 		userMatches = likedUser if userMatches == "" else userMatches + ', ' + likedUser
+		chats = compatibleUser['username'] + user['username'] if chats == "" else chats + ', ' + compatibleUser['username'] + user['username']
+		compatibleUserchats = compatibleUser['username'] + user['username'] if compatibleUserchats == "" else compatibleUserchats + ', ' + compatibleUser['username'] + user['username']
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
-		query = { "$set": {'Matches': userMatches, 'Likes': userLikes}}
+		query = { "$set": {'Matches': userMatches, 'Likes': userLikes, 'Chats': chats}}
 		col.update_one({ "username": session['user'] }, query)
-		query = { "$set": {'Matches': compatibleUserMatches }}
+		query = { "$set": {'Matches': compatibleUserMatches, 'Chats': compatibleUserchats}}
 		col.update_one({ "username": likedUser }, query)
 		q = { "username": likedUser, "Subject": "You Got A Match :)","content":"Congratulations "+ likedUser + ", You just got a match, "+session['user'] +" just liked you back. You can now chat with them!!!","status": "0" }
 		q1 = {"username": likedUser}
@@ -377,8 +382,8 @@ def dislike(dislikedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
-	q = { "username": userDislikes, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ userDislikes + "!!!!!!! :( "+ session['user'] + " just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
-	q1 = {"username": userDislikes}
+	q = { "username": dislikedUser, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ dislikedUser + "!!!!!!! :( "+ session['user'] + " just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
+	q1 = {"username": dislikedUser}
 	ud = col.find(q1)
 	a = []
 	for x in ud:
@@ -614,8 +619,10 @@ def viewprofile(username):
 		ConnectionStatus = cursor['ConnectionStatus']
 		Popularity = cursor['Popularity']
 		Age = cursor['Age']
+	chatee = col.find_one(query)
 	query = { "username": session['user'] }
 	user = col.find_one(query)
+	chatter = user
 	blockedUsers = user['Blocked']
 	blockedUsers = blockedUsers.split(', ')
 	if (username in blockedUsers):
@@ -643,7 +650,58 @@ def viewprofile(username):
 		data.append(x)
 		if x['status'] == "0":
 			num += 1
-	return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity,num=num)
+	if (chatee['Chats'] and chatter['Chats'] != ""):
+		chateeArr = chatee['Chats'].split(', ')
+		chatterArr = chatter['Chats'].split(', ')
+		alt1 = chatter['username'] + chatee['username']
+		alt2 = chatee['username'] + chatter['username']
+		user1 = chatter['username']
+		user2 = chatee['username']
+		for x in chateeArr:
+			if x == alt1 or x == alt2:
+				break
+		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity, num=num, chat=x, chatter=user1, chatee=user2)
+	else:
+		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity,num=num)
+
+@app.route('/chat')
+def chat():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	room = request.args.get('room')
+	chatee = request.args.get('chatee')
+	chatter = request.args.get('chatter')
+	name = request.args.get('name')
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	if (chatter == username):
+		if room and chatter and name:
+			return render_template('chat.html', room=room, chatter=chatter, chatee=chatee, name=name, user=session['user'], num=num)
+		else:
+			return redirect(url_for('chat.html'))
+	else:
+		return render_template(url_for('home'))
+
+@socketio.on('jointhething')
+def joinevent(stuff):
+    app.logger.info("weclome {} to the chat with someone in {}". format(stuff['chatter'], stuff['room']))
+    join_room(stuff['room'])
+    #attaches an id to join room which is the value "room"
+
+@socketio.on('sendthething')
+def sendevent(stuff):
+    app.logger.info("message: {} from {} to {}". format(stuff['message'], stuff['chatter'], stuff['room']))
+    socketio.emit('receive_message', stuff, chatee=stuff['room'])
+
+#@socketio.on('chat_notif')
 
 @app.route('/profileviews/')
 def profileviews():
@@ -789,4 +847,4 @@ def randomString(stringLength=8):
 	return ''.join(random.choice(letters) for i in range(stringLength))
 
 if (__name__ == "__main__"):
-	app.run(debug = True)
+	socketio.run(app, debug=True)

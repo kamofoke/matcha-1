@@ -61,6 +61,11 @@
                                 {% endif %}
                             {% endif %}
                         </div>
+                        {% if chat and chatter and chatee and name %}
+                        <div>
+                            <a href="{{ url_for('chat', room = chat, chatter = chatter, name = name) }}"> start a chat with {{name}}</a>
+                        </div>
+                        {% endif %}
                     </div>
                     <div class="profile-usermenu">
                         <ul class="nav">

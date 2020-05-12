@@ -28,8 +28,8 @@
         <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-		<li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
+        <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+        <li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
     </div>
@@ -164,10 +164,3 @@
     <br>    
 </body>
 </html>
-<!--<script>
-var myVar = setInterval(myTimer, 5000);
-
-function myTimer() {
-	location.reload();
-}
-</script>-->
