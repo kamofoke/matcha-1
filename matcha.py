@@ -21,6 +21,7 @@ app.config['IMAGE_UPLOADS'] = UPLOAD_FOLDER
 cluster = MongoClient("mongodb+srv://matcha:password13@matcha-g1enx.mongodb.net/test?retryWrites=true&w=majority")
 db = cluster["Matcha"]
 col = db["Users"]
+notif = db["Notifications"]
 
 mail_settings = {
     "MAIL_SERVER": 'smtp.gmail.com',
@@ -136,6 +137,14 @@ def home():
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	user = col.find_one(query)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
 	if (user):
 		Food = user['Food']
 		Music = user['Music']
@@ -327,15 +336,30 @@ def like(likedUser):
 		chats = compatibleUser['username'] + user['username'] if chats == "" else chats + ', ' + compatibleUser['username'] + user['username']
 		compatibleUserchats = compatibleUser['username'] + user['username'] if compatibleUserchats == "" else compatibleUserchats + ', ' + compatibleUser['username'] + user['username']
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
-		
 		query = { "$set": {'Matches': userMatches, 'Likes': userLikes, 'Chats': chats}}
 		col.update_one({ "username": session['user'] }, query)
 		query = { "$set": {'Matches': compatibleUserMatches, 'Chats': compatibleUserchats}}
 		col.update_one({ "username": likedUser }, query)
+		q = { "username": likedUser, "Subject": "You Got A Match :)","content":"Congratulations "+ likedUser + ", You just got a match, "+session['user'] +" just liked you back. You can now chat with them!!!","status": "0" }
+		q1 = {"username": likedUser}
+		ud = col.find(q1)
+		a = []
+		for x in ud:
+			a.append(x)
+		if a[0]['Noti'] == "1":
+			notif.insert_one(q)
 	else:
 		userLikes = likedUser if userLikes == "" else userLikes + ', ' + likedUser
 		query = { "$set": {'Likes': userLikes}}
 		col.update_one({ "username": session['user'] }, query)
+		q = { "username": likedUser, "Subject": "Somebody Likes You :)","content":"Congratulations "+ likedUser + ", "+session['user'] +" just liked you!!! View their profile, maybe you will like them back ;)","status": "0" }
+		q1 = {"username": likedUser}
+		ud = col.find(q1)
+		a = []
+		for x in ud:
+			a.append(x)
+		if a[0]['Noti'] == "1":
+			notif.insert_one(q)
 	query = { "$set": { 'Popularity': compatibleUserPopularity, 'ProfileLikes': userProfileLikes }}
 	col.update_one({ "username": likedUser }, query)
 	return redirect(url_for('home'))
@@ -350,6 +374,14 @@ def dislike(dislikedUser):
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
+	q = { "username": userDislikes, "Subject": "Somebody Just Disliked Your Profile :(","content":"Oh No "+ userDislikes + "!!!!!!! :( "+ session['user'] + " just disliked your profile!!! But dont worry, theres plenty of fish in the sea ;)","status": "0" }
+	q1 = {"username": userDislikes}
+	ud = col.find(q1)
+	a = []
+	for x in ud:
+		a.append(x)
+	if a[0]['Noti'] == "1":
+		notif.insert_one(q)
 	query = ({"username": dislikedUser})
 	user = col.find_one(query)
 	userPopularity = (int(user['Popularity']) - 1)
@@ -416,7 +448,32 @@ def matches():
 	user = col.find_one(query)
 	matches = user['Matches']
 	matches = matches.split(', ')
-	return render_template('matches.html', matches=matches, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('matches.html', matches=matches, user=session['user'],num=num)
+
+@app.route('/notifications')
+def notifications():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	for x in dat:
+		data.append(x)
+	data.reverse()
+	myquery = {"username": session['user']}
+	newvalues = {"$set": { "status": "1" }}
+	notif.update_many(myquery, newvalues)
+	return render_template('notifications.html', data=data, user=session['user'])
 
 @app.route('/notis')
 def thing():
@@ -518,7 +575,15 @@ def profile():
 		Image_Name_Arr = cursor['Images'].split(', ')
 		Popularity = cursor['Popularity']
 		Age = cursor['Age']
-	return render_template('profile.html', user=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile.html', user=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation, ImgArr=Image_Name_Arr, noti=Noti, popularity=Popularity,num=num)
 
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
@@ -561,6 +626,22 @@ def viewprofile(username):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
+	q = { "username": username, "Subject": "Somebody Viewed Your Profile :)","content":"Hey There "+ username + ","+session['user'] +" is currently viewing your profile!!!","status": "0" }
+	q1 = {"username": username}
+	ud = col.find(q1)
+	a = []
+	for x in ud:
+		a.append(x)
+	if a[0]['Noti'] == "1":
+		notif.insert_one(q)
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
 	if (chatee['Chats'] and chatter['Chats'] != ""):
 		chateeArr = chatee['Chats'].split(', ')
 		chatterArr = chatter['Chats'].split(', ')
@@ -571,9 +652,9 @@ def viewprofile(username):
 		for x in chateeArr:
 			if x == alt1 or x == alt2:
 				break
-		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity, chat=x, chatter=user1, chatee=user2)
+		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity, num=num, chat=x, chatter=user1, chatee=user2)
 	else:
-		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity)
+		return render_template('view-profile.html', blocked=blocked, user=session['user'], username=username, age=Age, name=Name, surname=Surname, food=Food, music=Music, movies=Movies, animals=Animals, sports=Sports, bio=Bio, suburb=Suburb, gender=Gender, postal_code=Postal_Code, sexual_orientation=Sexual_Orientation,  noti=Noti, ImgArr=Image_Name_Arr, connectionStatus=ConnectionStatus, popularity=Popularity,num=num)
 
 @app.route('/chat')
 def chat():
@@ -616,7 +697,15 @@ def profileviews():
 	user = col.find_one(query)
 	profileViews = user['ProfileViews']
 	profileViews = profileViews.split(', ')
-	return render_template('profile-views.html', profileViews=profileViews, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile-views.html', profileViews=profileViews, user=session['user'],num=num)
 
 @app.route('/profilelikes/')
 def profilelikes():
@@ -628,7 +717,15 @@ def profilelikes():
 	user = col.find_one(query)
 	profileLikes = user['ProfileLikes']
 	profileLikes = profileLikes.split(', ')
-	return render_template('profile-likes.html', profileLikes=profileLikes, user=session['user'])
+	q = {"username": session['user']}
+	dat = notif.find(q)
+	data = []
+	num = 0
+	for x in dat:
+		data.append(x)
+		if x['status'] == "0":
+			num += 1
+	return render_template('profile-likes.html', profileLikes=profileLikes, user=session['user'],num=num)
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
