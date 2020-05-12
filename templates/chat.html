@@ -47,7 +47,6 @@
                 var tosend = document.getElementById('ddraft');
                 var messagebox = document.getElementById('messagebox');
                 messagebox.onsubmit = function (e) {
-                    console.log("submitted");
                     e.preventDefault();
                     var messagetrim = tosend.value.trim();
                     if(messagetrim.length)
@@ -61,7 +60,6 @@
                     tosend.value = ''; 
                 }; 
                 socket.on('receive_message', function (stuff) {
-                console.log(stuff);
                 const newNode = document.createElement('div');
                 newNode.innerHTML = `<b>${stuff.chatter}:&nbsp;</b> ${stuff.message}`;
                 document.getElementById('newmessage').appendChild(newNode);
