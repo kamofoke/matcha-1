@@ -15,17 +15,24 @@
     <title>{{username}}'s Profile</title>
 </head>
 <body>
-
+	<script> 
+		$(document).ready(function(){
+			setInterval(function(){
+     		 $("#here").load(window.location.href + " #here" );
+		}, 8000);
+		});
+	</script>
+	<div id = "here">
 	<ul class="topnav">
-	  <li><a href="{{ url_for('home') }}">Home</a></li>
-      <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
-      <li><a href="{{ url_for('matches') }}">Matches</a></li>
-      <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
-      <li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-	  <li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
-	  <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
-	</ul>
-	
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('profile') }}">My Profile ({{user}})</a></li>
+        <li><a href="{{ url_for('matches') }}">Matches</a></li>
+        <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
+		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
+		<li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
+        <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+    </div>
 	<div style="padding:0 16px;">
 	</div>
 	
