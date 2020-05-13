@@ -762,8 +762,7 @@ def chats():
 	user = col.find_one(query)
 	chats = user['Chats']
 	newMessage = user['NewMessage']
-	chatsMessages = []
-	chatsMessage = []
+	chats = chats.split(', ')
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
