@@ -48,6 +48,8 @@ def signup():
 	password = request.form['password']
 	passrep = request.form['passwordrepeat']
 	bday = request.form['bday']
+	if (name == '' or surname == '' or username == '' or email == '' or password == '' or passrep == '' or bday == ''):
+		return render_template('index.html', error = -2)
 	bday2 = re.search("([12]\\d{3}/(0[1-9]|1[0-2])/(0[1-9]|[12]\\d|3[01]))", bday) 
 	if bday2:
 		today = date.today()
@@ -88,6 +90,8 @@ def login():
 		return render_template('index.html')
 	username = request.form['username']
 	password = request.form['password']
+	if (username == '' or password == ''):
+		return render_template('index.html', error = -2)
 	result = col.find_one({"username": username})
 	if result != None:
 		for cursor in col.find({"username": username}):
