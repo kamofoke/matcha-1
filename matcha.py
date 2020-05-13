@@ -182,10 +182,14 @@ def home():
 		typeof = request.form['typeOf']
 		if typeof == 'search':
 			thing.hasFilters = True
-			thing.minAge = int(request.form['searchByAgeMin'])
-			thing.maxAge = int(request.form['searchByAgeMax'])
-			thing.minPopularity = int(request.form['searchByPopularityMin'])
-			thing.maxPopularity = int(request.form['searchByPopularityMax'])
+			thing.minAge = int(request.form['searchByAgeMin']) if request.form['searchByAgeMin'] != '' else 18
+			thing.maxAge = int(request.form['searchByAgeMax']) if request.form['searchByAgeMax'] != '' else 100
+			thing.maxAgeValue = int(request.form['searchByAgeMin']) if request.form['searchByAgeMin'] != '' else ''
+			thing.maxAgeValue = int(request.form['searchByAgeMax']) if request.form['searchByAgeMax'] != '' else ''
+			thing.minPopularity = int(request.form['searchByPopularityMin']) if request.form['searchByPopularityMin'] != '' else -2147483648
+			thing.maxPopularity = int(request.form['searchByPopularityMax']) if request.form['searchByPopularityMax'] != '' else 2147483647
+			thing.minPopularityValue = int(request.form['searchByPopularityMin']) if request.form['searchByPopularityMin'] != '' else ''
+			thing.maxPopularityValue = int(request.form['searchByPopularityMax']) if request.form['searchByPopularityMax'] != '' else ''
 			thing.tagAnimals = request.form['animals']
 			thing.tagFood = request.form['food']
 			thing.tagSports = request.form['sports']
@@ -202,7 +206,8 @@ def home():
 				thing.hasTags = False
 			else:
 				thing.hasTags = True
-			thing.suburb = Suburb if request.form['searchByLocation'] == '' else request.form['searchByLocation']
+			thing.suburb = request.form['searchByLocation'] if request.form['searchByLocation'] != '' else Suburb
+			thing.suburbValue = request.form['searchByLocation'] if request.form['searchByLocation'] != '' else ''
 		elif typeof == 'sort':
 			thing.hasSort = True
 			sortby = request.form['sort']

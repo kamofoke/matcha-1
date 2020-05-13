@@ -15,13 +15,13 @@
     <title>Home</title>
 </head>
 <body>
-	<!-- <script> 
+	<script> 
 		$(document).ready(function(){
 			setInterval(function(){
      		 $("#here").load(window.location.href + " #here" );
 		}, 3000);
 		});
-	</script> -->
+	</script>
 	<div id = "here">
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -38,13 +38,13 @@
         <form action=" {{ url_for('home') }}" method = "POST" enctype="multipart/form-data">
             <input type="hidden" name="typeOf" value="search">
             <h2>Search and Filter</h2>
-			Search By Age Range <input type = "number"  min="18" max="100" value="{{thing.minAge}}" name="searchByAgeMin"/> : <input type = "number" value="{{thing.maxAge}}" name="searchByAgeMax"  min="18" max="100" />
+			Search By Age Range <input type = "number"  min="18" max="100" value="{{thing.minAgeValue}}" name="searchByAgeMin" placeholder="Min"/> : <input type = "number" value="{{thing.maxAgeValue}}" name="searchByAgeMax"  min="18" max="100" placeholder="Max"/>
             <br>
             <br>
-            Search By Location <input type = "text" value="{{thing.suburb}}" name="searchByLocation" placeholder="Search By Location" />
+            Search By Location <input type = "text" value="{{thing.suburbValue}}" name="searchByLocation" placeholder="Search By Location" />
             <br>
             <br>
-            Search By Popularity Range <input type = "number"  value="{{thing.minPopularity}}" name="searchByPopularityMin"/> : <input type = "number" value="{{thing.maxPopularity}}" name="searchByPopularityMax" />
+            Search By Popularity Range <input type = "number"  value="{{thing.minPopularityValue}}" name="searchByPopularityMin" placeholder="Min"/> : <input type = "number" value="{{thing.maxPopularityValue}}" name="searchByPopularityMax" placeholder="Max"/>
             <br>
             <br>	
             <input type="checkbox" name="animals" value="yes" {{thing.tagAnimalsCheck}}>
