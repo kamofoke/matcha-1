@@ -761,18 +761,9 @@ def chats():
 	query = {"username": username}
 	user = col.find_one(query)
 	chats = user['Chats']
-	newMessage = False
+	newMessage = user['NewMessage']
+	chatsMessages = []
 	chatsMessage = []
-	if chats:
-		chats = chats.split(', ')
-		for chat in chats:
-			query = {"$or" : [
-				{ "$and" : [ { "FromUser" : chat }, { "ToUser" : username }]},
-				{ "$and" : [ { "FromUser" : username }, { "ToUser" : chat }]}]}
-			chatMessages = chatsdb.find(query)
-			for chatMessage in chatMessages:
-				if chatMessage['Read'] == False:
-					newMessage = True
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
@@ -781,7 +772,7 @@ def chats():
 		data.append(x)
 		if x['status'] == "0":
 			num += 1
-	return render_template('chats.html', chats=chats, chatMessage=chatMessage, newMessage=newMessage, user=username, num=num)
+	return render_template('chats.html', chats=chats, newMessage=newMessage, user=username, num=num)
 
 # @socketio.on('jointhething')
 # def joinevent(stuff):
