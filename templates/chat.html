@@ -31,7 +31,13 @@
             <h1>you have no potential chats</h1>
         {% else %}
             <h1>Chat with {{name}}</h1>
-            <div id="newmessage"></div>
+            <div id="newmessage">
+                {% if chatterMessage %}
+                    <div>
+                    <b>{{ chatee }}:&nbsp;</b>{{ chatterMessage }}
+                    </div>
+                {% endif %}
+            </div>
             <form id="messagebox">
                 <input type="text" name="draft" id="ddraft" placeholder="enter message here">
                 <button type="submit">send</button>
@@ -44,6 +50,7 @@
                     chatter: "{{ chatter }}",
                     room: "{{ room }}"
                 });
+                
                 var tosend = document.getElementById('ddraft');
                 var messagebox = document.getElementById('messagebox');
                 messagebox.onsubmit = function (e) {
@@ -54,17 +61,20 @@
                         socket.emit('sendthething', {
                             chatter: "{{ chatter }}",
                             room: "{{ room }}",
+                            chatee: "{{ chatee }}",
                             message: messagetrim
                         });
+                        console.log("oi");
                     }
                     tosend.value = ''; 
                 }; 
                 socket.on('receive_message', function (stuff) {
-                const newNode = document.createElement('div');
-                newNode.innerHTML = `<b>${stuff.chatter}:&nbsp;</b> ${stuff.message}`;
-                document.getElementById('newmessage').appendChild(newNode);
+                    console.log("received");
+                    const newNode = document.createElement('div');
+                    newNode.innerHTML = `<b>${stuff.chatter}:&nbsp;</b> ${stuff.message}`;
+                    document.getElementById('newmessage').appendChild(newNode);
                 });
-            });   
+            });
             </script>
             </html>
         {% endif %}

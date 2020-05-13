@@ -61,7 +61,7 @@ def signup():
 						matches = re.search("(?=^.{8,}$)((?=.*\\d)(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password)
 						if (matches):
 							if password == passrep:
-								query = {"Pref": "0", "Verify": "0", "Matches": "", "Chats": "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
+								query = {"Pref": "0", "Verify": "0", "Matches": "", "Chats": "", 'NewMessage': "", "Likes": "", "Dislikes": "", "Popularity": 0, "Blocked": "", "ProfileViews": "", "ProfileLikes": "", "ConnectionStatus": "", "Noti": "1", "Images": "", "Name": name, "Surname": surname, "Age": age, "Email": email, "username": username, "Password": hash_password(password)}
 								col.insert_one(query)
 								msg = Message("Matcha Verification", sender="noreply@matcha.com", recipients=[email])
 								msg.body = "Hello {0}!\n\nYou have successfully signed up for Matcha!\nPlease click the link below to verify your account.\n\nhttp://localhost:5000/verify/{0}.\n\nThank you.\n".format(username)
@@ -643,7 +643,7 @@ def profile():
 @app.route('/viewprofile/<username>')
 def viewprofile(username):
 	try:
-		username = session['user']
+		username1 = session['user']
 	except KeyError:
 		return render_template('index.html')
 	try:
@@ -738,8 +738,17 @@ def chat():
 		if x['status'] == "0":
 			num += 1
 	if (chatter == username):
-		if room and chatter and name:
+		query = { "username": chatter }
+		chattermsg = col.find_one(query)
+		chatterMessage = chattermsg['NewMessage']
+		if room and chatter and name and chatterMessage == "":
 			return render_template('chat.html', room=room, chatter=chatter, chatee=chatee, name=name, user=session['user'], num=num)
+		elif room and chatter and name and chatterMessage != "":
+			chtm = chatterMessage
+			chatterMessage = ""
+			query = { "$set": {'NewMessage': chatterMessage}}
+			col.update_one({ "username": session['user'] }, query)
+			return render_template('chat.html', chatterMessage=chtm, room=room, chatter=chatter, chatee=chatee, name=name, user=session['user'], num=num)
 		else:
 			return redirect(url_for('chat'))
 	else:
@@ -747,16 +756,30 @@ def chat():
 
 @socketio.on('jointhething')
 def joinevent(stuff):
-    app.logger.info("weclome {} to the chat with someone in {}". format(stuff['chatter'], stuff['room']))
-    join_room(stuff['room'])
-    #attaches an id to join room which is the value "room"
+	app.logger.info("weclome {} to the chat with someone in {}". format(stuff['chatter'], stuff['room']))
+	join_room(stuff['room'])
+	#attaches an id to join room which is the value "room"
 
 @socketio.on('sendthething')
 def sendevent(stuff):
-    app.logger.info("message: {} from {} to {}". format(stuff['message'], stuff['chatter'], stuff['room']))
-    socketio.emit('receive_message', stuff, chatee=stuff['room'])
+	app.logger.info("message: {} from {} to {}". format(stuff['message'], stuff['chatter'], stuff['room']))
+	addMessage(stuff['chatee'], stuff['message'])
+	#addnotifchats(stuff['chatee'], stuff['chatter'])
+	socketio.emit('receive_message', stuff, chatee=stuff['room'])
 
-#@socketio.on('chat_notif')
+def addMessage(chatee, message):
+	query = { "$set": {'NewMessage': message}}
+	col.update_one({ "username": chatee }, query)
+
+def addnotifchats(notified, notifier):
+	q = { "username": notified, "Subject": notifier+" sent you a message","content":"","status": "0" }
+	q1 = {"username": notified}
+	ud = col.find(q1)
+	a = []
+	for x in ud:
+		a.append(x)
+	if a[0]['Noti'] == "1":
+		notif.insert_one(q)
 
 @app.route('/profileviews/')
 def profileviews():
