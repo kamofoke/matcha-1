@@ -29,7 +29,12 @@
         <li><a href="{{ url_for('matches') }}">Matches</a></li>
         <li><a href="{{ url_for('profileviews') }}">Who Viewed My Profile?</a></li>
 		<li><a href="{{ url_for('profilelikes') }}">Who Liked My Profile?</a></li>
-		<li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
+        <li><a href="{{ url_for('notifications') }}">Notifications({{num}})</a></li>
+        {% if newMessage == True %}
+        <li><a href="{{ url_for('chats') }}">Chats <span class="badge badge-secondary"> New </span></a></li>
+        {% else %}
+        <li><a href="{{ url_for('chats') }}">Chats</a></li>
+        {% endif %}
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
     </div>
@@ -61,11 +66,6 @@
                                 {% endif %}
                             {% endif %}
                         </div>
-                        {% if chat and chatter and chatee and name %}
-                        <div>
-                            <a href="{{ url_for('chat', room = chat, chatter = chatter, name = name) }}"> start a chat with {{name}}</a>
-                        </div>
-                        {% endif %}
                     </div>
                     <div class="profile-usermenu">
                         <ul class="nav">
