@@ -462,18 +462,13 @@ def viewblockedusers():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
 	if (username != "Admin"):
 		return 'You do not have permission to view this page'
 	query = ({"username": username})
 	user = col.find_one(query)
-	newMessage = user['NewMessage']
 	blockedUsers = user['Blocked']
 	blockedUsersArr = blockedUsers.split(', ')
-	return render_template('blocked-users.html', blockedUsersArr=blockedUsersArr, NewMessage=newMessage)
+	return render_template('blocked-users.html', blockedUsersArr=blockedUsersArr)
 
 @app.route('/matches')
 def matches():
