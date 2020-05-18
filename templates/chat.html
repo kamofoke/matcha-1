@@ -15,6 +15,20 @@
     <link rel="shortcut icon" href="#" />
     <title>Your Matches</title>
 </head>
+<!-- <script> 
+    $(document).ready(function(){
+        setInterval(function(){
+            window.location.assign(window.location.href);
+    }, 10000);
+    });
+</script> -->
+<script> 
+    $(document).ready(function(){
+        setInterval(function(){
+          $("#here").load(window.location.href + " #here" );
+    }, 5000);
+    });
+</script>
 <body>
 	<ul class="topnav">
         <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -30,10 +44,10 @@
         {% endif %}
         <li style="cursor: pointer;" class="right"><a href = "{{ url_for('logout') }}">Logout</a></li>
     </ul>
-
     <div class="container">
         <center><h1>{{chatUser}}</h1></center>
         <center>
+        <div id = "here">
         {% if chatMessages %}
         {% for chatMessage in chatMessages %}
         {% if chatMessage['FromUser'] == chatUser %}
@@ -47,11 +61,13 @@
         {% endif %}
         {% endfor %}
         {% endif %}
+        </div>
         <form action=" {{ url_for('chat', chatUser = chatUser) }}" method = "POST" enctype="multipart/form-data">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Type Message Here" name='message'>
+                <br>
                 <div class="input-group-append">
-                  <button class="btn btn-outline-secondary btn-success" type="submit">Button</button>
+                  <button class="btn btn-outline-secondary btn-success" type="submit">Send</button>
                 </div>
             </div>
         </form>

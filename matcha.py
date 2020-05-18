@@ -107,6 +107,7 @@ def login():
 				if verify == "1":
 					global thing
 					thing.hasFilters = False
+					thing.hasSort = False
 					if pref == "0":
 						session['user'] = username
 						thing.hasPref = False
@@ -145,15 +146,8 @@ def home():
 		thing.hasPref == False
 	except:
 		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	username = session['user']
-	res = requests.get('https://ipinfo.io')
-	location_data = res.json()
-	suburb = location_data['city'] + ', ' + location_data['region']
-	postal_code = location_data['postal']
-	locationQuery = { 'username' : username }
-	locationChange = col.find_one(locationQuery)
-	if (suburb != locationChange['Suburb']):
-		col.update_one(locationQuery, { '$set': { 'Suburb' : suburb } })
 	col.update_one({"username": username},{"$set": {'ConnectionStatus': 'Online'} })
 	query = {"username": username}
 	user = col.find_one(query)
@@ -217,8 +211,7 @@ def home():
 			thing.sortByValue = int(sortby[0] + sortby[1])
 			sortby = sortby[2:]
 			thing.sortBy = sortby if sortby else None
-	elif thing.hasFilters == False:
-		thing.hasSort = False
+	if thing.hasFilters == False:
 		thing.minAge = 18
 		thing.maxAge = 100
 		thing.minPopularity = -2147483648
@@ -236,14 +229,14 @@ def home():
 		thing.tagMovies = "no"
 		thing.tagMusic = "no"
 		thing.suburb = Suburb
+	if thing.hasSort == False:
 		thing.sortBy = 'Popularity'
 		thing.sortByValue = -1
-
 	query = {"$and" : [
 		{ "username" : {"$ne" : username}},
 		{ "$or" : [ { "Sports" : Sports }, { "Food" : Food }, { "Music" : Music }, { "Movies" : Movies }, { "Animals" : Animals } ] }
 	]}
-
+	print (thing.suburb)
 	if Sexual_Orientation == 'homosexual' and Gender == 'male':
 		query["$and"].append({"$or" : [
 			{"$and" : [ {"Gender": "male"}, {"Sexual Orientation" : "homosexual"}]},
@@ -289,7 +282,7 @@ def home():
 	tagsArr = ['Movies', 'Food', 'Music', 'Animals', 'Sports']
 	if (compatibleUsers):
 		for compatibleUser in compatibleUsers:
-			if (thing.hasFilters == False):
+			if (thing.hasFilters == False and thing.hasSort == False):
 				if (compatibleUser['username'] not in likesArr and compatibleUser['username'] not in dislikesArr and
 				compatibleUser['username'] not in blockedArr and compatibleUser['Suburb'].upper() == thing.suburb.upper()):
 					for tag in tagsArr:
@@ -482,6 +475,7 @@ def matches():
 			return render_template('preferences.html')
 	except KeyError:
 		return render_template('index.html')
+	thing.noti = 'False' + username
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	matches = user['Matches']
@@ -507,6 +501,7 @@ def notifications():
 		thing.hasPref == False
 	except:
 		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
@@ -572,10 +567,8 @@ def preferences_handler():
 	food = request.form['food']
 	uploaded_images = request.files.getlist('img')
 	index = 0
-	res = requests.get('https://ipinfo.io')
-	location_data = res.json()
-	suburb = location_data['city'] + ', ' + location_data['region']
-	postal_code = location_data['postal']
+	suburb = request.form['suburb']
+	postal_code = request.form['postal']
 	for file in uploaded_images:
 		index += 1
 		if (index == 1):
@@ -615,6 +608,7 @@ def profile():
 		thing.hasPref == False
 	except:
 		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -690,14 +684,16 @@ def viewprofile(username):
 		userProfileViews = session['user'] if userProfileViews == "" else userProfileViews + ', ' + session['user']
 		query = { "$set": {'ProfileViews': userProfileViews}}
 		col.update_one({ "username": username }, query)
-	q = { "username": username, "Subject": "Somebody Viewed Your Profile :)","content":"Hey There "+ username + ","+session['user'] +" is currently viewing your profile!!!","status": "0" }
-	q1 = {"username": username}
-	ud = col.find(q1)
-	a = []
-	for x in ud:
-		a.append(x)
-	if a[0]['Noti'] == "1":
-		notif.insert_one(q)
+	if (thing.noti == 'False' + username1):
+		thing.noti = 'True' + username1
+		q = { "username": username, "Subject": "Somebody Viewed Your Profile :)","content":"Hey There "+ username + ","+session['user'] +" is currently viewing your profile!!!","status": "0" }
+		q1 = {"username": username}
+		ud = col.find(q1)
+		a = []
+		for x in ud:
+			a.append(x)
+		if a[0]['Noti'] == "1":
+			notif.insert_one(q)
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
@@ -752,6 +748,15 @@ def chat(chatUser):
 	
 @app.route('/chats')
 def chats():
+	try:
+		username = session['user']
+	except KeyError:
+		return render_template('index.html')
+	try:
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	username = session['user']
 	query = {"username": username}
 	user = col.find_one(query)
@@ -768,19 +773,6 @@ def chats():
 			num += 1
 	return render_template('chats.html', chats=chats, newMessage=newMessage, user=username, num=num)
 
-# @socketio.on('jointhething')
-# def joinevent(stuff):
-#     app.logger.info("weclome {} to the chat with someone in {}". format(stuff['chatter'], stuff['room']))
-#     join_room(stuff['room'])
-#     #attaches an id to join room which is the value "room"
-
-# @socketio.on('sendthething')
-# def sendevent(stuff):
-#     app.logger.info("message: {} from {} to {}". format(stuff['message'], stuff['chatter'], stuff['room']))
-#     socketio.emit('receive_message', stuff, chatee=stuff['room'])
-
-#@socketio.on('chat_notif')
-
 @app.route('/profileviews/')
 def profileviews():
 	try:
@@ -791,6 +783,7 @@ def profileviews():
 		thing.hasPref == False
 	except:
 		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	query = ({"username": username})
 	user = col.find_one(query)
 	profileViews = user['ProfileViews']
@@ -816,6 +809,7 @@ def profilelikes():
 		thing.hasPref == False
 	except:
 		return render_template('preferences.html')
+	thing.noti = 'False' + username
 	query = ({"username": username})
 	user = col.find_one(query)
 	profileLikes = user['ProfileLikes']
@@ -832,15 +826,6 @@ def profilelikes():
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
-	try:
-		username = session['user']
-	except KeyError:
-		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
-	finally:
 		myquery = { "username": username }
 		newvalues = { "$set": {"Verify": "1"} }
 		col.update_one(myquery, newvalues)

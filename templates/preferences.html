@@ -42,27 +42,36 @@ Name: <input name="name" type="text" required> Surname: <input name="surname" ty
 <input name="location" type="text" required>
 <p>Bio:</p>
 <textarea name="bio" placeholder="Tell us more..." me="message" style="width:250px; height:150px;"></textarea>
-<h2>Interests</h2>
-<h3>Do you like animals?</h3>
+<h2>Interests Tags</h2>
+<h3>#Animals?</h3>
 <input type="radio" name="animals" value="yes">Yes
 <input type="radio" name="animals" checked="checked" value="no">No
-<h3>Do you like music?</h3>
+<h3>#Music?</h3>
 <input type="radio" name="music" value="yes">Yes
 <input type="radio" name="music" checked="checked" value="no">No
-<h3>Do you like movies?</h3>
+<h3>#Movies?</h3>
 <input type="radio" name="movies" value="yes">Yes
 <input type="radio" name="movies" checked="checked" value="no">No
-<h3>Do you like sports</h3>
+<h3>#Sports</h3>
 <input type="radio" name="sports" value="yes">Yes
 <input type="radio" name="sports" checked="checked" value="no">No
-<h3>Do you like food?</h3>
+<h3>#Food?</h3>
 <input type="radio" name="food" value="yes">Yes
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
 <br>Select images: <input type="file" name="img" multiple required>
+<div class="location"></div>
 <br/><input onclick="locationAlert()" type="submit" name = "pref" value = "Submit"/>
 <script>
 function locationAlert(){
+		$.ajax({
+			url: "https://ipapi.co/json/",
+			jsonpCallback: "callback",
+			dataType: "json",
+			success: function( location ) {
+				$('.location').html(`<input type="hidden" name="suburb" value="${location.city}, ${location.region}"><input type="hidden" name="postal" value="${location.postal}">`);
+			}
+		});	
 		navigator.geolocation.getCurrentPosition(function(position){})
 	}
 	</script>
