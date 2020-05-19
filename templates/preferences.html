@@ -61,17 +61,19 @@ Name: <input name="name" type="text" required> Surname: <input name="surname" ty
 <br>
 <br>Select images: <input type="file" name="img" multiple required>
 <div class="location"></div>
+<script>
+	$.ajax({
+		url: "https://ipapi.co/json/",
+		jsonpCallback: "callback",
+		dataType: "json",
+		success: function( location ) {
+			$('.location').html(`<input type="hidden" name="suburb" value="${location.city}, ${location.region}"><input type="hidden" name="postal" value="${location.postal}">`);
+		}
+	});	
+</script>
 <br/><input onclick="locationAlert()" type="submit" name = "pref" value = "Submit"/>
 <script>
 function locationAlert(){
-		$.ajax({
-			url: "https://ipapi.co/json/",
-			jsonpCallback: "callback",
-			dataType: "json",
-			success: function( location ) {
-				$('.location').html(`<input type="hidden" name="suburb" value="${location.city}, ${location.region}"><input type="hidden" name="postal" value="${location.postal}">`);
-			}
-		});	
 		navigator.geolocation.getCurrentPosition(function(position){})
 	}
 	</script>
