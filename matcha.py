@@ -326,6 +326,8 @@ def like(likedUser):
 		return render_template('preferences.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
+	if (compatibleUser == None):
+		return redirect(url_for('home'))
 	compatibleUserPopularity = (int(compatibleUser['Popularity']) + 1) 
 	compatibleUserLikes = compatibleUser['Likes']
 	compatibleUserLikesArr = compatibleUserLikes.split(', ')
@@ -381,6 +383,10 @@ def dislike(dislikedUser):
 		return render_template('index.html')
 	if thing.hasPref == False :
 		return render_template('preferences.html')
+	query = ({"username": dislikedUser})
+	compatibleUser = col.find_one(query)
+	if (compatibleUser == None):
+		return redirect(url_for('home'))
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userDislikes = user['Dislikes']
@@ -410,6 +416,10 @@ def block(blockedUser):
 		return render_template('index.html')
 	if thing.hasPref == False :
 		return render_template('preferences.html')
+	query = ({"username": blockedUser})
+	compatibleUser = col.find_one(query)
+	if (compatibleUser == None):
+		return redirect(url_for('home'))
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userBlocked = user['Blocked']
@@ -445,7 +455,7 @@ def viewblockedusers():
 	except KeyError:
 		return render_template('index.html')
 	if (username != "Admin"):
-		return 'You do not have permission to view this page'
+		return redirect(url_for('home'))
 	query = ({"username": username})
 	user = col.find_one(query)
 	blockedUsers = user['Blocked']
@@ -623,7 +633,11 @@ def viewprofile(username):
 	except KeyError:
 		return render_template('index.html')
 	if thing.hasPref == False :
-		return render_template('preferences.html')	
+		return render_template('preferences.html')
+	query = ({"username": username})
+	compatibleUser = col.find_one(query)
+	if (compatibleUser == None):
+		return redirect(url_for('home'))	
 	query = {"username": username}
 	for cursor in col.find(query):
 		Name = cursor['Name']
@@ -818,6 +832,10 @@ def profilelikes():
 
 @app.route('/verify/<username>', methods=['POST', 'GET'])
 def verify(username):
+		query = ({"username": username})
+		compatibleUser = col.find_one(query)
+		if (compatibleUser == None or compatibleUser['Verify'] == 1 ):
+			return redirect(url_for('index'))
 		myquery = { "username": username }
 		newvalues = { "$set": {"Verify": "1"} }
 		col.update_one(myquery, newvalues)
