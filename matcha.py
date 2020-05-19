@@ -141,7 +141,7 @@ def home():
 	try:
 		username = session['user']
 		if request.method == "GET":
-			return render_template('preferences.html'))
+			return render_template('preferences.html')
 	except KeyError:
 		return render_template('index.html')
 	try:
@@ -690,11 +690,30 @@ def viewprofile(username):
 		q = { "username": username, "Subject": "Somebody Viewed Your Profile :)","content":"Hey There "+ username + ","+session['user'] +" is currently viewing your profile!!!","status": "0" }
 		q1 = {"username": username}
 		ud = col.find(q1)
+		nd = notif.find(q1)
 		a = []
+		b = []
+		check = "Hey There "+ username + ","+session['user'] + " is currently viewing your profile!!!"
 		for x in ud:
 			a.append(x)
-		if a[0]['Noti'] == "1":
-			notif.insert_one(q)
+		for z in nd:
+			b.append(z)
+		b.reverse()
+		if b:
+			i = 0
+			while i < len(b):
+				if b[i]['content'] == check and b[i]['status'] == "0":
+					s = "dont"
+				elif b[i]['content'] == check and b[i]['status'] == "1":
+					s = "do it"
+					break
+				else:
+					s = "do it"
+				i += 1
+			i -= 1
+			if a[0]['Noti'] == "1":
+				if s == "do it":
+					notif.insert_one(q)
 	q = {"username": session['user']}
 	dat = notif.find(q)
 	data = []
