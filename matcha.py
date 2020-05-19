@@ -140,6 +140,8 @@ def logout():
 def home():
 	try:
 		username = session['user']
+		if request.method == "GET":
+			return render_template('preferences.html'))
 	except KeyError:
 		return render_template('index.html')
 	try:
