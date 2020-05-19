@@ -234,7 +234,6 @@ def home():
 		{ "username" : {"$ne" : username}},
 		{ "$or" : [ { "Sports" : Sports }, { "Food" : Food }, { "Music" : Music }, { "Movies" : Movies }, { "Animals" : Animals } ] }
 	]}
-	print (thing.suburb)
 	if Sexual_Orientation == 'homosexual' and Gender == 'male':
 		query["$and"].append({"$or" : [
 			{"$and" : [ {"Gender": "male"}, {"Sexual Orientation" : "homosexual"}]},
@@ -323,9 +322,7 @@ def like(likedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	query = ({"username": likedUser})
 	compatibleUser = col.find_one(query)
@@ -382,9 +379,7 @@ def dislike(dislikedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
@@ -413,9 +408,7 @@ def block(blockedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
@@ -432,10 +425,8 @@ def unblock(blockedUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')	
+	if thing.hasPref == False :
+		return render_template('preferences.html')
 	query = ({"username": session['user']})
 	user = col.find_one(query)
 	userBlocked = user['Blocked']
@@ -467,9 +458,7 @@ def matches():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	thing.noti = 'False' + username
 	query = ({"username": session['user']})
@@ -493,9 +482,7 @@ def notifications():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	thing.noti = 'False' + username
 	q = {"username": session['user']}
@@ -518,9 +505,7 @@ def thing():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	usr = session['user']
 	q1 = { "username": usr }
@@ -589,9 +574,7 @@ def editprofile():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	return render_template('preferences.html', username = username)
 
@@ -601,9 +584,7 @@ def profile():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')
 	thing.noti = 'False' + username
 	query = {"username": username}
@@ -641,9 +622,7 @@ def viewprofile(username):
 		username1 = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
+	if thing.hasPref == False :
 		return render_template('preferences.html')	
 	query = {"username": username}
 	for cursor in col.find(query):
@@ -727,16 +706,19 @@ def chat(chatUser):
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
+	if thing.hasPref == False :
+		return render_template('preferences.html')	
 	if request.method == 'POST' :
 		message = request.form['message']
 		query = { "FromUser" : username, "ToUser" : chatUser, 'Message': message, 'Read': False }
 		chatsdb.insert_one(query)
 		query = {"$set": {"NewMessage": True}}
 		col.update_one({"username": chatUser}, query)
+	query = {'username': session['user']}
+	user = col.find_one(query)
+	matches = user['Matches'].split(', ')
+	if (chatUser not in matches):
+		return redirect(url_for('chats'))
 	query = {"$or" : [
 		{ "$and" : [ { "FromUser" : chatUser }, { "ToUser" : username }]},
 		{ "$and" : [ { "FromUser" : username }, { "ToUser" : chatUser }]}]}
@@ -768,10 +750,8 @@ def chats():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
+	if thing.hasPref == False :
+		return render_template('preferences.html')	
 	thing.noti = 'False' + username
 	username = session['user']
 	query = {"username": username}
@@ -795,10 +775,8 @@ def profileviews():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
+	if thing.hasPref == False :
+		return render_template('preferences.html')	
 	thing.noti = 'False' + username
 	query = ({"username": username})
 	user = col.find_one(query)
@@ -821,10 +799,8 @@ def profilelikes():
 		username = session['user']
 	except KeyError:
 		return render_template('index.html')
-	try:
-		thing.hasPref == False
-	except:
-		return render_template('preferences.html')
+	if thing.hasPref == False :
+		return render_template('preferences.html')	
 	thing.noti = 'False' + username
 	query = ({"username": username})
 	user = col.find_one(query)
