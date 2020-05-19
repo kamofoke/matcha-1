@@ -470,11 +470,9 @@ def matches():
 	except KeyError:
 		return render_template('index.html')
 	try:
-		username = session['user']
-		if (thing.hasPref == False):
-			return render_template('preferences.html')
-	except KeyError:
-		return render_template('index.html')
+		thing.hasPref == False
+	except:
+		return render_template('preferences.html')
 	thing.noti = 'False' + username
 	query = ({"username": session['user']})
 	user = col.find_one(query)
@@ -584,6 +582,7 @@ def preferences_handler():
 	myquery = { "username": username }
 	newvalues = { "$set": {"Pref": "1", "Name": name, "Surname": surname, "Gender": gender, "Suburb": suburb, "Postal Code": postal_code, "Sexual Orientation": sexual, "Bio": bio, "Images": imgName, "Animals": animals, "Music": music, "Sports": sports, "Food": food, "Movies": movies} }
 	col.update_one(myquery, newvalues)
+	thing.hasPref = True
 	return redirect(url_for('home'))
 
 @app.route('/editprofile')
