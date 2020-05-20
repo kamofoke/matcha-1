@@ -60,7 +60,9 @@ Name: <input name="name" type="text" required> Surname: <input name="surname" ty
 <input type="radio" name="food" checked="checked" value="no">No
 <br>
 <br>Select images: <input type="file" name="img" multiple required>
-<div class="location"></div>
+<div class="location">
+	<input type="hidden" name="suburb" value="You Cannot Be Located"><input type="hidden" name="postal" value="0000">
+</div>
 <script>
 	$.ajax({
 		url: "https://ipapi.co/json/",
